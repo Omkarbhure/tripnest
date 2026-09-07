@@ -17,6 +17,21 @@ import {
     acceptJoinRequest,
     rejectJoinRequest,
 } from "@/lib/tripMemberApi";
+import {
+    Users,
+    Crown,
+    Shield,
+    User,
+    Mail,
+    UserPlus,
+    AlertTriangle,
+    CheckCircle2,
+    Trash2,
+    Inbox,
+    X,
+    Check,
+    RefreshCw,
+} from "lucide-react";
 
 interface TripMembersSectionProps {
     tripId: number;
@@ -24,20 +39,20 @@ interface TripMembersSectionProps {
     onMemberCountChange?: (count: number) => void;
 }
 
-const ROLE_BADGES: Record<string, { label: string; icon: string; className: string }> = {
+const ROLE_BADGES: Record<string, { label: string; icon: React.ReactNode; className: string }> = {
     OWNER: {
         label: "Trip Owner",
-        icon: "👑",
+        icon: <Crown className="w-3.5 h-3.5 text-amber-300" />,
         className: "bg-gradient-to-r from-amber-500/20 to-orange-500/20 border-amber-400/40 text-amber-300 shadow-[0_0_12px_rgba(245,158,11,0.2)]",
     },
     GROUP_ADMIN: {
         label: "Group Admin",
-        icon: "🛡️",
+        icon: <Shield className="w-3.5 h-3.5 text-violet-300" />,
         className: "bg-gradient-to-r from-violet-500/20 to-purple-500/20 border-violet-400/40 text-violet-300 shadow-[0_0_12px_rgba(139,92,246,0.2)]",
     },
     MEMBER: {
         label: "Member",
-        icon: "👤",
+        icon: <User className="w-3.5 h-3.5 text-sky-300" />,
         className: "bg-gradient-to-r from-sky-500/20 to-teal-500/20 border-sky-400/30 text-sky-300",
     },
 };
@@ -225,7 +240,7 @@ export default function TripMembersSection({
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-orange-500/20 via-amber-500/20 to-teal-500/10 border border-white/15 flex items-center justify-center text-lg shadow-inner">
-                        👥
+                        <Users className="w-5 h-5 text-orange-300" />
                     </div>
                     <div>
                         <div className="flex items-center gap-2">
@@ -276,23 +291,44 @@ export default function TripMembersSection({
 
             {/* Error Banner */}
             {error && (
-                <div className="glass-banner glass-banner--error">
-                    <span>⚠️</span>
-                    <span className="flex-1">{error}</span>
-                    <button
-                        onClick={() => setError("")}
-                        className="text-white/40 hover:text-white text-sm"
-                    >
-                        ✕
-                    </button>
+                <div className="glass-banner glass-banner--error flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                        <AlertTriangle className="w-4 h-4 shrink-0" />
+                        <span>{error}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={loadData}
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/15 text-xs text-white transition-colors"
+                        >
+                            <RefreshCw className="w-3 h-3" />
+                            <span>Retry</span>
+                        </button>
+                        <button
+                            onClick={() => setError("")}
+                            className="text-white/40 hover:text-white text-sm"
+                        >
+                            ✕
+                        </button>
+                    </div>
                 </div>
             )}
 
             {/* Loading State */}
             {loading && (
-                <div className="py-12 text-center">
-                    <div className="h-7 w-7 animate-spin rounded-full border-[3px] border-orange-400 border-t-transparent mx-auto mb-3" />
-                    <p className="text-xs text-white/50">Loading trip members…</p>
+                <div className="space-y-3 py-4">
+                    {[1, 2, 3].map((i) => (
+                        <div key={i} className="p-4 rounded-2xl border border-white/10 bg-white/5 flex items-center justify-between animate-pulse">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-xl bg-white/10" />
+                                <div className="space-y-1.5">
+                                    <div className="h-3.5 bg-white/10 rounded w-28" />
+                                    <div className="h-2.5 bg-white/5 rounded w-36" />
+                                </div>
+                            </div>
+                            <div className="w-20 h-6 bg-white/10 rounded-full" />
+                        </div>
+                    ))}
                 </div>
             )}
 
@@ -305,7 +341,7 @@ export default function TripMembersSection({
                     {canManageMembers && (
                         <div className="rounded-2xl border border-white/15 bg-gradient-to-b from-white/[0.06] to-white/[0.02] p-5 sm:p-6 backdrop-blur-xl">
                             <div className="flex items-center gap-2 mb-3">
-                                <span className="text-sm">✉️</span>
+                                <Mail className="w-4 h-4 text-orange-300" />
                                 <h3 className="text-sm font-semibold text-white">
                                     Invite Member by Email
                                 </h3>
@@ -343,9 +379,10 @@ export default function TripMembersSection({
                                     <button
                                         type="submit"
                                         disabled={inviting || !inviteEmail.trim()}
-                                        className="glass-btn-primary px-6 py-2.5 text-sm shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="glass-btn-primary px-6 py-2.5 text-sm shrink-0 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center gap-1.5"
                                     >
-                                        {inviting ? "Inviting…" : "Add Member"}
+                                        <UserPlus className="w-4 h-4" />
+                                        <span>{inviting ? "Inviting…" : "Add Member"}</span>
                                     </button>
                                 </div>
 
@@ -353,9 +390,9 @@ export default function TripMembersSection({
                                     <motion.div
                                         initial={{ opacity: 0, y: -4 }}
                                         animate={{ opacity: 1, y: 0 }}
-                                        className="glass-banner glass-banner--error text-xs"
+                                        className="glass-banner glass-banner--error text-xs flex items-center gap-1.5"
                                     >
-                                        <span>⚠️</span>
+                                        <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
                                         <span>{inviteError}</span>
                                     </motion.div>
                                 )}
@@ -364,9 +401,9 @@ export default function TripMembersSection({
                                     <motion.div
                                         initial={{ opacity: 0, y: -4 }}
                                         animate={{ opacity: 1, y: 0 }}
-                                        className="glass-banner glass-banner--success text-xs"
+                                        className="glass-banner glass-banner--success text-xs flex items-center gap-1.5"
                                     >
-                                        <span>✅</span>
+                                        <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
                                         <span>{inviteSuccess}</span>
                                     </motion.div>
                                 )}
@@ -448,16 +485,14 @@ export default function TripMembersSection({
                                                         title="Remove Member"
                                                         className="p-1.5 rounded-xl border border-rose-500/20 bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 hover:text-rose-200 transition-colors"
                                                     >
-                                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                        </svg>
+                                                        <Trash2 className="h-4 w-4" />
                                                     </button>
                                                 )}
                                             </div>
                                         ) : (
                                             /* Static Badge */
                                             <span
-                                                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-semibold border ${badge.className}`}
+                                                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-semibold border ${badge.className}`}
                                             >
                                                 <span>{badge.icon}</span>
                                                 <span>{badge.label}</span>
@@ -481,8 +516,8 @@ export default function TripMembersSection({
                     </p>
 
                     {joinRequests.length === 0 ? (
-                        <div className="rounded-2xl border border-dashed border-white/15 bg-white/[0.02] p-8 text-center">
-                            <span className="text-2xl block mb-2">📬</span>
+                        <div className="rounded-2xl border border-dashed border-white/15 bg-white/[0.02] p-8 text-center space-y-2">
+                            <Inbox className="w-8 h-8 text-white/30 mx-auto" />
                             <p className="text-xs text-white/50">No join requests received yet.</p>
                         </div>
                     ) : (
@@ -543,16 +578,18 @@ export default function TripMembersSection({
                                                 <button
                                                     onClick={() => handleRespondRequest(req.id, true)}
                                                     disabled={processingRequestId === req.id}
-                                                    className="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-400/40 transition-colors disabled:opacity-50"
+                                                    className="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-400/40 transition-colors disabled:opacity-50 inline-flex items-center gap-1"
                                                 >
-                                                    {processingRequestId === req.id ? "…" : "Accept"}
+                                                    <Check className="w-3.5 h-3.5" />
+                                                    <span>{processingRequestId === req.id ? "…" : "Accept"}</span>
                                                 </button>
                                                 <button
                                                     onClick={() => handleRespondRequest(req.id, false)}
                                                     disabled={processingRequestId === req.id}
-                                                    className="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-400/40 transition-colors disabled:opacity-50"
+                                                    className="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-400/40 transition-colors disabled:opacity-50 inline-flex items-center gap-1"
                                                 >
-                                                    {processingRequestId === req.id ? "…" : "Decline"}
+                                                    <X className="w-3.5 h-3.5" />
+                                                    <span>{processingRequestId === req.id ? "…" : "Decline"}</span>
                                                 </button>
                                             </div>
                                         )}
@@ -576,8 +613,8 @@ export default function TripMembersSection({
                             exit={{ opacity: 0, scale: 0.95 }}
                             className="w-full max-w-sm rounded-3xl border border-white/20 bg-[#0f172a]/95 backdrop-blur-2xl p-6 shadow-2xl space-y-4"
                         >
-                            <div className="w-12 h-12 rounded-2xl bg-rose-500/20 border border-rose-400/40 flex items-center justify-center text-xl text-rose-300 mx-auto">
-                                ⚠️
+                            <div className="w-12 h-12 rounded-2xl bg-rose-500/20 border border-rose-400/40 flex items-center justify-center text-rose-300 mx-auto">
+                                <AlertTriangle className="w-6 h-6" />
                             </div>
                             <div className="text-center">
                                 <h3 className="text-base font-bold text-white">

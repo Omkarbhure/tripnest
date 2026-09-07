@@ -21,6 +21,19 @@ import FadeIn from "@/components/ui/FadeIn";
 import { StaggerList, StaggerItem } from "@/components/ui/StaggerList";
 import { ToastContainer } from "@/components/ui/Toast";
 import { useToast } from "@/hooks/useToast";
+import {
+  Search,
+  Plane,
+  Palmtree,
+  MapPin,
+  Calendar,
+  Wallet,
+  Clock,
+  Users,
+  Inbox,
+  X,
+  ArrowRight,
+} from "lucide-react";
 
 const STATUS_PILL: Record<string, string> = {
   PLANNED: "glass-pill glass-pill--planned",
@@ -202,13 +215,14 @@ function TripsContent() {
                 </button>
                 <button
                   onClick={() => setActiveTab("explore")}
-                  className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 ${
+                  className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 inline-flex items-center gap-1.5 ${
                     activeTab === "explore"
                       ? "bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-lg"
                       : "text-white/60 hover:text-white"
                   }`}
                 >
-                  🔍 Find & Join Trips
+                  <Search className="w-3.5 h-3.5" />
+                  <span>Find & Join Trips</span>
                 </button>
                 <button
                   onClick={() => setActiveTab("my-requests")}
@@ -227,7 +241,7 @@ function TripsContent() {
                 href="/trips/create"
                 className="glass-btn-primary px-5 py-2.5 text-xs sm:text-sm font-semibold inline-flex items-center gap-1.5"
               >
-                <span>✈️</span>
+                <Plane className="w-4 h-4" />
                 <span>Create Trip</span>
               </Link>
             </div>
@@ -301,9 +315,10 @@ function TripsContent() {
                   </Link>
                   <button
                     onClick={() => setActiveTab("explore")}
-                    className="glass-btn-outline px-6 py-3 text-sm font-semibold"
+                    className="glass-btn-outline px-6 py-3 text-sm font-semibold inline-flex items-center gap-1.5"
                   >
-                    🔍 Browse Trips to Join
+                    <Search className="w-4 h-4" />
+                    <span>Browse Trips to Join</span>
                   </button>
                 </div>
               </div>
@@ -400,9 +415,7 @@ function TripsContent() {
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="glass-input pl-10 text-sm"
                     />
-                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40 text-sm">
-                      🔍
-                    </span>
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
                   </div>
                   <button
                     type="submit"
@@ -423,7 +436,7 @@ function TripsContent() {
               </div>
             ) : searchResults.length === 0 && searchSearched ? (
               <div className="glass-card p-12 text-center">
-                <span className="text-3xl block mb-2">🏖️</span>
+                <Palmtree className="w-10 h-10 text-orange-300 mx-auto mb-2" />
                 <h3 className="text-base font-bold text-white">No trips found</h3>
                 <p className="text-xs text-white/50 mt-1">
                   Try searching with different keywords or create a brand new trip!
@@ -457,12 +470,12 @@ function TripsContent() {
                         <div className="mt-3 space-y-1 text-xs text-white/70">
                           {trip.destinationName && (
                             <p className="flex items-center gap-1.5">
-                              <span>📍</span>
+                              <MapPin className="w-3.5 h-3.5 text-orange-400" />
                               <span>{trip.destinationName}</span>
                             </p>
                           )}
                           <p className="flex items-center gap-1.5">
-                            <span>📅</span>
+                            <Calendar className="w-3.5 h-3.5 text-sky-400" />
                             <span>
                               {trip.startDate ? trip.startDate : "TBD"} &rarr;{" "}
                               {trip.endDate ? trip.endDate : "TBD"}
@@ -470,7 +483,7 @@ function TripsContent() {
                           </p>
                           {trip.budget != null && (
                             <p className="flex items-center gap-1.5">
-                              <span>💰</span>
+                              <Wallet className="w-3.5 h-3.5 text-emerald-400" />
                               <span>Budget: ₹{trip.budget.toLocaleString()}</span>
                             </p>
                           )}
@@ -494,7 +507,7 @@ function TripsContent() {
                           </Link>
                         ) : isPending ? (
                           <div className="w-full py-2.5 rounded-xl border border-amber-400/30 bg-amber-500/10 text-amber-300 text-xs font-semibold text-center flex items-center justify-center gap-1.5">
-                            <span>⏳</span>
+                            <Clock className="w-3.5 h-3.5 text-amber-300" />
                             <span>Join Request Pending</span>
                           </div>
                         ) : (
@@ -502,7 +515,7 @@ function TripsContent() {
                             onClick={() => setSelectedTripToJoin(trip)}
                             className="glass-btn-outline w-full py-2.5 text-center text-xs font-semibold flex items-center justify-center gap-1.5 hover:bg-orange-500/20 hover:border-orange-400/40 hover:text-orange-200 transition-colors"
                           >
-                            <span>🤝</span>
+                            <Users className="w-3.5 h-3.5 text-orange-300" />
                             <span>Request to Join</span>
                           </button>
                         )}
@@ -534,7 +547,7 @@ function TripsContent() {
               </div>
             ) : myRequests.length === 0 ? (
               <div className="rounded-2xl border border-dashed border-white/15 bg-white/[0.02] p-10 text-center space-y-3">
-                <span className="text-3xl block">📋</span>
+                <Inbox className="w-10 h-10 text-white/30 mx-auto" />
                 <p className="text-sm font-semibold text-white">No active requests sent</p>
                 <p className="text-xs text-white/50">
                   Switch to &ldquo;Find & Join Trips&rdquo; to discover group trips and submit a request.
@@ -607,7 +620,7 @@ function TripsContent() {
               >
                 <div className="flex items-center justify-between pb-2 border-b border-white/10">
                   <div className="flex items-center gap-2">
-                    <span className="text-lg">🤝</span>
+                    <Users className="w-5 h-5 text-orange-400" />
                     <h3 className="text-base font-bold text-white">
                       Request to Join Trip
                     </h3>
@@ -616,7 +629,7 @@ function TripsContent() {
                     onClick={() => setSelectedTripToJoin(null)}
                     className="text-white/40 hover:text-white text-sm"
                   >
-                    ✕
+                    <X className="w-4 h-4" />
                   </button>
                 </div>
 

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import NotificationBell from "./NotificationBell";
+import { Plane, Shield, ArrowLeft, LogOut, Compass, MapPin, User as UserIcon } from "lucide-react";
 
 interface NavbarProps {
   backHref?: string;
@@ -25,8 +26,12 @@ export default function Navbar({ backHref, backLabel }: NavbarProps) {
           href="/dashboard"
           className="flex items-center gap-2 shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 rounded-lg group"
         >
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-orange-500 to-amber-400 flex items-center justify-center shadow-[0_2px_8px_rgba(249,115,22,0.4)]">
-            <span className="text-xs font-black text-white">{isAdmin ? "🛡️" : "✈"}</span>
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-orange-500 to-amber-400 flex items-center justify-center shadow-[0_2px_8px_rgba(249,115,22,0.4)]">
+            {isAdmin ? (
+              <Shield className="w-4 h-4 text-white" />
+            ) : (
+              <Plane className="w-4 h-4 text-white -rotate-45" />
+            )}
           </div>
           <div className="flex items-center gap-1.5">
             <span className="text-[1.1rem] font-bold tracking-tight leading-none text-white">TripNest</span>
@@ -48,9 +53,10 @@ export default function Navbar({ backHref, backLabel }: NavbarProps) {
           {backHref && (
             <Link
               href={backHref}
-              className="hidden sm:inline-flex items-center gap-1 rounded-xl px-3 py-1.5 text-sm text-white/60 hover:text-orange-300 hover:bg-orange-500/10 border border-transparent hover:border-orange-400/30 transition-all duration-150"
+              className="hidden sm:inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-sm text-white/60 hover:text-orange-300 hover:bg-orange-500/10 border border-transparent hover:border-orange-400/30 transition-all duration-150"
             >
-              <span className="text-xs">←</span> {backLabel ?? "Back"}
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>{backLabel ?? "Back"}</span>
             </Link>
           )}
 
@@ -58,36 +64,41 @@ export default function Navbar({ backHref, backLabel }: NavbarProps) {
             <>
               <Link
                 href="/dashboard"
-                className="rounded-xl px-3 py-1.5 text-sm font-semibold text-purple-300 bg-purple-500/10 border border-purple-400/30 transition-all duration-150"
+                className="inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-sm font-semibold text-purple-300 bg-purple-500/10 border border-purple-400/30 transition-all duration-150"
               >
-                🛡️ Control Center
+                <Shield className="w-4 h-4" />
+                <span>Control Center</span>
               </Link>
               <Link
                 href="/destinations"
-                className="rounded-xl px-3 py-1.5 text-sm font-medium text-white/70 hover:text-white hover:bg-white/5 border border-transparent hover:border-white/10 transition-all duration-150"
+                className="inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-sm font-medium text-white/70 hover:text-white hover:bg-white/5 border border-transparent hover:border-white/10 transition-all duration-150"
               >
-                Destinations
+                <MapPin className="w-3.5 h-3.5" />
+                <span>Destinations</span>
               </Link>
             </>
           ) : (
             <>
               <Link
                 href="/trips"
-                className="rounded-xl px-3 py-1.5 text-sm font-medium text-white/70 hover:text-white hover:bg-white/5 border border-transparent hover:border-white/10 transition-all duration-150"
+                className="inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-sm font-medium text-white/70 hover:text-white hover:bg-white/5 border border-transparent hover:border-white/10 transition-all duration-150"
               >
-                My Trips
+                <Compass className="w-3.5 h-3.5" />
+                <span>My Trips</span>
               </Link>
               <Link
                 href="/destinations"
-                className="rounded-xl px-3 py-1.5 text-sm font-medium text-white/70 hover:text-white hover:bg-white/5 border border-transparent hover:border-white/10 transition-all duration-150"
+                className="inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-sm font-medium text-white/70 hover:text-white hover:bg-white/5 border border-transparent hover:border-white/10 transition-all duration-150"
               >
-                Destinations
+                <MapPin className="w-3.5 h-3.5" />
+                <span>Destinations</span>
               </Link>
               <Link
                 href="/profile"
-                className="rounded-xl px-3 py-1.5 text-sm font-medium text-white/70 hover:text-white hover:bg-white/5 border border-transparent hover:border-white/10 transition-all duration-150"
+                className="inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-sm font-medium text-white/70 hover:text-white hover:bg-white/5 border border-transparent hover:border-white/10 transition-all duration-150"
               >
-                Profile
+                <UserIcon className="w-3.5 h-3.5" />
+                <span>Profile</span>
               </Link>
             </>
           )}
@@ -112,9 +123,10 @@ export default function Navbar({ backHref, backLabel }: NavbarProps) {
 
           <button
             onClick={() => { logout(); router.push("/login"); }}
-            className="rounded-full border border-white/15 bg-white/5 backdrop-blur px-4 py-1.5 text-sm font-medium text-white/80 hover:border-orange-400/60 hover:text-orange-300 hover:bg-orange-500/10 active:scale-95 transition-all duration-150 ml-1"
+            className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/5 backdrop-blur px-3.5 py-1.5 text-sm font-medium text-white/80 hover:border-orange-400/60 hover:text-orange-300 hover:bg-orange-500/10 active:scale-95 transition-all duration-150 ml-1"
           >
-            Sign out
+            <LogOut className="w-3.5 h-3.5" />
+            <span>Sign out</span>
           </button>
         </motion.div>
       </div>

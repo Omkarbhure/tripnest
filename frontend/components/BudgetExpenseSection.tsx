@@ -12,6 +12,17 @@ import apiClient from "@/lib/apiClient";
 import { Chart, ArcElement, Tooltip, Legend, PieController, BarController, CategoryScale, LinearScale, BarElement } from "chart.js";
 import { ToastContainer } from "@/components/ui/Toast";
 import { useToast } from "@/hooks/useToast";
+import {
+  Wallet,
+  Receipt,
+  PieChart as PieChartIcon,
+  AlertTriangle,
+  Plus,
+  Pencil,
+  Trash2,
+  ExternalLink,
+  RefreshCw,
+} from "lucide-react";
 
 Chart.register(ArcElement, Tooltip, Legend, PieController, BarController, CategoryScale, LinearScale, BarElement);
 
@@ -209,20 +220,38 @@ export default function BudgetExpenseSection({ tripId }: Props) {
         <div className="glass-card p-7 sm:p-8">
           <div className="flex items-center justify-between mb-5">
             <div className="glass-icon-chip">
-              <span className="text-sm">💰</span>
+              <Wallet className="w-4 h-4 text-amber-400" />
               <span className="text-sm font-semibold text-white/90">Budget</span>
             </div>
             <button
               onClick={() => { setShowBudgetForm((v) => !v); setBudgetError(""); }}
-              className="glass-btn-primary px-4 py-2"
+              className="glass-btn-primary px-4 py-2 inline-flex items-center gap-1.5"
             >
-              {budget ? "Edit Budget" : "+ Set Budget"}
+              <Plus className="w-3.5 h-3.5" />
+              <span>{budget ? "Edit Budget" : "Set Budget"}</span>
             </button>
           </div>
 
-          {budgetLoading && <p className="text-sm text-white/50">Loading budget…</p>}
+          {budgetLoading && (
+            <div className="space-y-3 animate-pulse py-2">
+              <div className="h-8 bg-white/10 rounded-lg w-1/3" />
+              <div className="h-4 bg-white/5 rounded-lg w-2/3" />
+            </div>
+          )}
           {budgetError && !showBudgetForm && (
-            <p className="text-sm text-red-400 flex items-center gap-1"><span>⚠️</span> {budgetError}</p>
+            <div className="glass-banner glass-banner--error text-sm flex items-center justify-between gap-2 my-2">
+              <div className="flex items-center gap-1.5">
+                <AlertTriangle className="w-4 h-4 shrink-0" />
+                <span>{budgetError}</span>
+              </div>
+              <button
+                onClick={loadBudget}
+                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/15 text-xs text-white transition-colors"
+              >
+                <RefreshCw className="w-3 h-3" />
+                <span>Retry</span>
+              </button>
+            </div>
           )}
 
           {showBudgetForm && (
@@ -234,8 +263,8 @@ export default function BudgetExpenseSection({ tripId }: Props) {
                 {budget ? "Update Budget" : "Create Budget"}
               </p>
               {budgetError && (
-                <div className="glass-banner glass-banner--error text-sm">
-                  <span>⚠️</span>
+                <div className="glass-banner glass-banner--error text-sm flex items-center gap-1.5">
+                  <AlertTriangle className="w-4 h-4 shrink-0" />
                   <span>{budgetError}</span>
                 </div>
               )}
@@ -336,15 +365,16 @@ export default function BudgetExpenseSection({ tripId }: Props) {
         <div className="glass-card p-7 sm:p-8">
           <div className="flex items-center justify-between mb-5">
             <div className="glass-icon-chip">
-              <span className="text-sm">🧾</span>
+              <Receipt className="w-4 h-4 text-orange-400" />
               <span className="text-sm font-semibold text-white/90">Expenses</span>
             </div>
             {!showExpenseForm && (
               <button
                 onClick={() => { resetExpenseForm(); setShowExpenseForm(true); }}
-                className="glass-btn-primary px-4 py-2"
+                className="glass-btn-primary px-4 py-2 inline-flex items-center gap-1.5"
               >
-                + Add Expense
+                <Plus className="w-3.5 h-3.5" />
+                <span>Add Expense</span>
               </button>
             )}
           </div>
@@ -358,8 +388,8 @@ export default function BudgetExpenseSection({ tripId }: Props) {
                 {editingExpenseId !== null ? "Edit Expense" : "New Expense"}
               </p>
               {expenseError && (
-                <div className="glass-banner glass-banner--error text-sm">
-                  <span>⚠️</span>
+                <div className="glass-banner glass-banner--error text-sm flex items-center gap-1.5">
+                  <AlertTriangle className="w-4 h-4 shrink-0" />
                   <span>{expenseError}</span>
                 </div>
               )}
@@ -432,11 +462,35 @@ export default function BudgetExpenseSection({ tripId }: Props) {
             </form>
           )}
 
-          {expensesLoading && <p className="text-sm text-white/50">Loading expenses…</p>}
+          {expensesLoading && (
+            <div className="space-y-2.5">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="glass-card-md p-4 flex items-center justify-between gap-3 animate-pulse">
+                  <div className="flex items-center gap-3 flex-1">
+                    <div className="w-3 h-3 rounded-full bg-white/10 shrink-0" />
+                    <div className="space-y-1.5 flex-1">
+                      <div className="h-4 bg-white/10 rounded w-1/4" />
+                      <div className="h-3 bg-white/5 rounded w-1/3" />
+                    </div>
+                  </div>
+                  <div className="w-16 h-6 bg-white/10 rounded-lg" />
+                </div>
+              ))}
+            </div>
+          )}
 
           {!expensesLoading && expenses.length === 0 && !showExpenseForm && (
-            <div className="rounded-xl border border-dashed border-white/15 bg-white/[0.02] p-6 text-center">
-              <p className="text-sm text-white/40">No expenses recorded yet.</p>
+            <div className="rounded-2xl border border-dashed border-white/15 bg-white/[0.02] p-8 text-center">
+              <Receipt className="w-8 h-8 text-white/30 mx-auto mb-2" />
+              <p className="text-sm font-semibold text-white/70">No expenses recorded yet</p>
+              <p className="text-xs text-white/40 mt-0.5 mb-3">Track payments, split costs, and manage your budget effortlessly.</p>
+              <button
+                onClick={() => { setShowExpenseForm(true); setExpenseError(""); }}
+                className="glass-btn-ghost px-4 py-1.5 text-xs inline-flex items-center gap-1.5"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Add First Expense</span>
+              </button>
             </div>
           )}
 
@@ -504,7 +558,7 @@ export default function BudgetExpenseSection({ tripId }: Props) {
         {summary.length > 0 && (
           <div className="glass-card p-7 sm:p-8">
             <div className="glass-icon-chip mb-6">
-              <span className="text-sm">📊</span>
+              <PieChartIcon className="w-4 h-4 text-purple-400" />
               <span className="text-sm font-semibold text-white/90">Spending by Category</span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">

@@ -4,18 +4,22 @@ import com.tripnest.tripnest_backend.dto.*;
 import com.tripnest.tripnest_backend.entity.Budget;
 import com.tripnest.tripnest_backend.entity.Expense;
 import com.tripnest.tripnest_backend.entity.Trip;
+import com.tripnest.tripnest_backend.entity.TripMember;
 import com.tripnest.tripnest_backend.entity.User;
 import com.tripnest.tripnest_backend.repository.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ExpenseService {
 
     private static final Set<String> VALID_CATEGORIES = Set.of(
@@ -25,6 +29,9 @@ public class ExpenseService {
     private final ExpenseRepository expenseRepository;
     private final UserRepository    userRepository;
     private final BudgetRepository  budgetRepository;
+    private final TripMemberRepository tripMemberRepository;
+    private final NotificationRepository notificationRepository;
+    private final NotificationService notificationService;
     private final TripAccessService tripAccessService;
 
     // ============================================================
@@ -39,6 +46,11 @@ public class ExpenseService {
         validateCategory(req.getCategory());
         validateAmount(req.getAmount());
 
+        BigDecimal spentBefore = expenseRepository.sumAmountByTripId(tripId);
+        if (spentBefore == null) {
+            spentBefore = BigDecimal.ZERO;
+        }
+
         Expense expense = new Expense();
         expense.setTrip(trip);
         expense.setPayer(payer);
@@ -51,8 +63,14 @@ public class ExpenseService {
         // Link to budget if one exists for this trip
         budgetRepository.findByTripId(tripId).ifPresent(expense::setBudget);
 
-        return toResponse(expenseRepository.save(expense));
+        Expense saved = expenseRepository.save(expense);
+        BigDecimal spentAfter = spentBefore.add(saved.getAmount());
+
+        checkAndTriggerBudgetAlerts(trip, spentBefore, spentAfter);
+
+        return toResponse(saved);
     }
+
 
     // ============================================================
     // LIST  GET /api/trips/{tripId}/expenses
@@ -89,13 +107,28 @@ public class ExpenseService {
         validateCategory(req.getCategory());
         validateAmount(req.getAmount());
 
+        BigDecimal oldAmount = expense.getAmount();
+        BigDecimal currentTotal = expenseRepository.sumAmountByTripId(tripId);
+        if (currentTotal == null) {
+            currentTotal = BigDecimal.ZERO;
+        }
+        BigDecimal spentBefore = currentTotal.subtract(oldAmount);
+        if (spentBefore.compareTo(BigDecimal.ZERO) < 0) {
+            spentBefore = BigDecimal.ZERO;
+        }
+
         expense.setCategory(req.getCategory().toUpperCase());
         expense.setAmount(req.getAmount());
         expense.setExpenseDate(req.getExpenseDate());
         expense.setDescription(req.getDescription());
         expense.setReceiptUrl(req.getReceiptUrl());
 
-        return toResponse(expenseRepository.save(expense));
+        Expense saved = expenseRepository.save(expense);
+        BigDecimal spentAfter = spentBefore.add(saved.getAmount());
+
+        checkAndTriggerBudgetAlerts(expense.getTrip(), spentBefore, spentAfter);
+
+        return toResponse(saved);
     }
 
     // ============================================================
@@ -165,6 +198,69 @@ public class ExpenseService {
     // PRIVATE HELPERS
     // ============================================================
 
+    private void checkAndTriggerBudgetAlerts(Trip trip, BigDecimal spentBefore, BigDecimal spentAfter) {
+        if (trip == null) {
+            return;
+        }
+
+        budgetRepository.findByTripId(trip.getId()).ifPresent(budget -> {
+            BigDecimal totalBudget = budget.getTotalBudget();
+            if (totalBudget == null || totalBudget.compareTo(BigDecimal.ZERO) <= 0) {
+                return;
+            }
+
+            BigDecimal threshold80 = totalBudget.multiply(new BigDecimal("0.80"));
+            BigDecimal threshold100 = totalBudget;
+            String currency = budget.getCurrency() != null ? budget.getCurrency() : "INR";
+
+            // Check 80% threshold crossing
+            if (spentBefore.compareTo(threshold80) < 0 && spentAfter.compareTo(threshold80) >= 0) {
+                sendBudgetAlert(trip, "80%", "80% of its budget (Spent: " + currency + " " + spentAfter + " of " + currency + " " + totalBudget + ")");
+            }
+
+            // Check 100% threshold crossing
+            if (spentBefore.compareTo(threshold100) < 0 && spentAfter.compareTo(threshold100) >= 0) {
+                sendBudgetAlert(trip, "100%", "100% of its budget (Spent: " + currency + " " + spentAfter + " of " + currency + " " + totalBudget + ")");
+            }
+        });
+    }
+
+    private void sendBudgetAlert(Trip trip, String thresholdTag, String detailMsg) {
+        Set<User> recipients = new HashSet<>();
+        if (trip.getUser() != null) {
+            recipients.add(trip.getUser());
+        }
+
+        List<TripMember> members = tripMemberRepository.findByTripIdWithUser(trip.getId());
+        for (TripMember member : members) {
+            if (member.getUser() != null) {
+                recipients.add(member.getUser());
+            }
+        }
+
+        String title = "Budget Alert: " + thresholdTag + " Reached for " + trip.getTitle();
+        String message = "Trip \"" + trip.getTitle() + "\" has reached " + detailMsg + ".";
+
+        for (User recipient : recipients) {
+            boolean alreadySent = notificationRepository.existsByUserIdAndTypeAndRelatedTripIdAndMessageContaining(
+                    recipient.getId(),
+                    "BUDGET_ALERT",
+                    trip.getId(),
+                    thresholdTag
+            );
+
+            if (!alreadySent) {
+                notificationService.createNotification(
+                        recipient,
+                        title,
+                        message,
+                        "BUDGET_ALERT",
+                        trip.getId()
+                );
+            }
+        }
+    }
+
     private User findUser(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found: " + email));
@@ -208,3 +304,4 @@ public class ExpenseService {
         );
     }
 }
+

@@ -10,6 +10,15 @@ import apiClient from "@/lib/apiClient";
 import FadeIn from "@/components/ui/FadeIn";
 import { ToastContainer } from "@/components/ui/Toast";
 import { useToast } from "@/hooks/useToast";
+import {
+  Camera,
+  Heart,
+  History,
+  Lock,
+  MapPin,
+  AlertTriangle,
+  RefreshCw,
+} from "lucide-react";
 
 const STATUS_PILL: Record<string, string> = {
   PLANNED: "glass-pill glass-pill--planned",
@@ -301,9 +310,10 @@ function ProfileContent() {
                       whileTap={{ scale: 0.97 }}
                       onClick={onChoosePhotoClick}
                       disabled={photoUploading}
-                      className="glass-btn-ghost disabled:opacity-60"
+                      className="glass-btn-ghost disabled:opacity-60 inline-flex items-center gap-1.5"
                     >
-                      {profile?.profilePhotoUrl ? "Change photo" : "Upload photo"}
+                      <Camera className="w-4 h-4" />
+                      <span>{profile?.profilePhotoUrl ? "Change photo" : "Upload photo"}</span>
                     </motion.button>
                     <input
                       ref={fileInputRef}
@@ -317,8 +327,8 @@ function ProfileContent() {
               </div>
 
               {error && (
-                <div className="glass-banner-error mb-5">
-                  <span className="shrink-0">⚠️</span>
+                <div className="glass-banner-error mb-5 flex items-center gap-2">
+                  <AlertTriangle className="w-4 h-4 shrink-0 text-rose-400" />
                   <span>{error}</span>
                 </div>
               )}
@@ -387,7 +397,7 @@ function ProfileContent() {
             <section className="glass-card p-6 sm:p-8">
               <div className="flex items-center gap-3 mb-5 pb-3 border-b border-white/10">
                 <div className="glass-icon-chip">
-                  <svg aria-hidden="true" className="w-5 h-5 text-orange-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-2.9-5.6 2.9 1.1-6.2L3 9.6l6.2-.9L12 3Z" /></svg>
+                  <Heart className="w-5 h-5 text-rose-400 fill-rose-400" />
                 </div>
                 <div>
                   <h2 className="glass-h2">Favorite Destination</h2>
@@ -434,7 +444,7 @@ function ProfileContent() {
             <section className="glass-card p-6 sm:p-8">
               <div className="flex items-center gap-3 mb-5 pb-3 border-t-0 border-x-0 border-b border-white/10">
                 <div className="glass-icon-chip">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12h18"/><path d="M5.5 5.5A8.5 8.5 0 0 1 18.5 12a8.5 8.5 0 0 1-13 6.5L2 12l3.5-6.5Z"/><path d="M18.5 5.5L22 12l-3.5 6.5A8.5 8.5 0 0 0 5.5 12a8.5 8.5 0 0 0 13-6.5Z"/></svg>
+                  <History className="w-5 h-5 text-orange-400" />
                 </div>
                 <div className="flex-1">
                   <h2 className="glass-h2">Travel History</h2>
@@ -442,10 +452,11 @@ function ProfileContent() {
                 </div>
                 <button
                   onClick={() => loadTrips()}
-                  className="ml-auto text-xs font-semibold text-orange-300 hover:text-orange-200 transition-colors"
+                  className="ml-auto text-xs font-semibold text-orange-300 hover:text-orange-200 transition-colors inline-flex items-center gap-1"
                   title="Refresh"
                 >
-                  Refresh
+                  <RefreshCw className="w-3 h-3" />
+                  <span>Refresh</span>
                 </button>
               </div>
 
@@ -455,8 +466,8 @@ function ProfileContent() {
 
               {!tripsLoading && sortedTrips.length === 0 && (
                 <div className="py-10 text-center rounded-2xl border border-dashed border-white/15 bg-white/[0.02]">
-                  <div className="mx-auto h-14 w-14 rounded-2xl glass-icon-chip mb-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12h18"/><path d="M5.5 5.5A8.5 8.5 0 0 1 18.5 12a8.5 8.5 0 0 1-13 6.5L2 12l3.5-6.5Z"/></svg>
+                  <div className="mx-auto h-14 w-14 rounded-2xl glass-icon-chip mb-4 flex items-center justify-center">
+                    <History className="w-7 h-7 text-orange-300/80" />
                   </div>
                   <p className="text-white/70 font-medium">No trips yet</p>
                   <p className="text-white/40 mt-1 text-sm">Your completed and planned trips will show here.</p>
@@ -480,7 +491,7 @@ function ProfileContent() {
                           <h3 className="font-semibold text-white truncate">{trip.title}</h3>
                           <p className="text-xs text-white/60 mt-1">
                             <span className="inline-flex items-center gap-1.5">
-                              <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 text-orange-300/80" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                              <MapPin className="w-3.5 h-3.5 text-orange-300/80" />
                               {trip.destinationName || "Unassigned destination"}
                             </span>
                             <span className="mx-2 text-white/20">·</span>
@@ -506,7 +517,7 @@ function ProfileContent() {
             <section className="glass-card p-6 sm:p-8">
               <div className="flex items-center gap-3 mb-5 pb-3 border-t-0 border-x-0 border-b border-white/10">
                 <div className="glass-icon-chip">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  <Lock className="w-5 h-5 text-purple-400" />
                 </div>
                 <div>
                   <h2 className="glass-h2">Reset Password</h2>
@@ -515,8 +526,8 @@ function ProfileContent() {
               </div>
 
               {pwError && (
-                <div className="glass-banner-error mb-5">
-                  <span className="shrink-0 mt-0.5">⚠️</span>
+                <div className="glass-banner-error mb-5 flex items-center gap-2">
+                  <AlertTriangle className="w-4 h-4 shrink-0 text-rose-400" />
                   <span>{pwError}</span>
                 </div>
               )}

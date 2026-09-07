@@ -1,25 +1,57 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Navbar from "@/components/Navbar";
 import AdminPanel from "@/components/AdminPanel";
 import { useAuth } from "@/context/AuthContext";
-import { tripApi } from "@/lib/api";
-import { TripResponse } from "@/lib/types";
+import { tripApi, dashboardApi } from "@/lib/api";
+import { TripResponse, TravelerDashboardResponse } from "@/lib/types";
 import { ToastContainer } from "@/components/ui/Toast";
 import { useToast } from "@/hooks/useToast";
+import {
+  Car,
+  Hotel,
+  Utensils,
+  ShoppingBag,
+  Ticket,
+  Package,
+  Tag,
+  AlertTriangle,
+  CheckCircle2,
+  Lightbulb,
+  Heart,
+  MapPin,
+  Calendar,
+  Clock,
+  Wallet,
+  Plus,
+  Compass,
+  Sparkles,
+  ArrowRight,
+  TrendingUp,
+  RefreshCw,
+} from "lucide-react";
 
 const STATUS_CONFIG: Record<string, { pill: string; dot: string }> = {
-  PLANNED:   { pill: "text-blue-700 bg-blue-50/70 ring-1 ring-blue-300/50 backdrop-blur-sm",  dot: "bg-blue-500" },
-  ONGOING:   { pill: "text-emerald-700 bg-emerald-50/70 ring-1 ring-emerald-300/50 backdrop-blur-sm", dot: "bg-emerald-500" },
-  COMPLETED: { pill: "text-amber-700 bg-amber-50/70 ring-1 ring-amber-300/50 backdrop-blur-sm", dot: "bg-amber-500" },
-  CANCELLED: { pill: "text-rose-700 bg-rose-50/70 ring-1 ring-rose-300/50 backdrop-blur-sm",  dot: "bg-rose-500" },
+  PLANNED:   { pill: "text-blue-300 bg-blue-500/15 ring-1 ring-blue-400/30 backdrop-blur-sm",  dot: "bg-blue-400" },
+  ONGOING:   { pill: "text-emerald-300 bg-emerald-500/15 ring-1 ring-emerald-400/30 backdrop-blur-sm", dot: "bg-emerald-400" },
+  COMPLETED: { pill: "text-amber-300 bg-amber-500/15 ring-1 ring-amber-400/30 backdrop-blur-sm", dot: "bg-amber-400" },
+  CANCELLED: { pill: "text-rose-300 bg-rose-500/15 ring-1 ring-rose-400/30 backdrop-blur-sm",  dot: "bg-rose-400" },
 };
 
-const FALLBACK_STATUS = { pill: "text-gray-700 bg-gray-100/60 ring-1 ring-gray-300/50", dot: "bg-gray-400" };
+const CATEGORY_COLORS: Record<string, { bg: string; text: string; icon: React.ReactNode }> = {
+  TRANSPORTATION: { bg: "from-blue-500 to-sky-400", text: "text-sky-300", icon: <Car className="w-3.5 h-3.5 text-sky-300" /> },
+  HOTEL:          { bg: "from-purple-500 to-indigo-400", text: "text-purple-300", icon: <Hotel className="w-3.5 h-3.5 text-purple-300" /> },
+  FOOD:           { bg: "from-amber-500 to-orange-400", text: "text-amber-300", icon: <Utensils className="w-3.5 h-3.5 text-amber-300" /> },
+  SHOPPING:       { bg: "from-pink-500 to-rose-400", text: "text-pink-300", icon: <ShoppingBag className="w-3.5 h-3.5 text-pink-300" /> },
+  ENTERTAINMENT:  { bg: "from-emerald-500 to-teal-400", text: "text-emerald-300", icon: <Ticket className="w-3.5 h-3.5 text-emerald-300" /> },
+  MISCELLANEOUS:  { bg: "from-slate-500 to-gray-400", text: "text-slate-300", icon: <Package className="w-3.5 h-3.5 text-slate-300" /> },
+};
+
+const FALLBACK_STATUS = { pill: "text-slate-300 bg-slate-500/15 ring-1 ring-slate-400/30 backdrop-blur-sm", dot: "bg-slate-400" };
 
 function formatDate(iso: string | null) {
   if (!iso) return "—";
@@ -34,19 +66,35 @@ function DashboardContent() {
   const { user } = useAuth();
   const isAdmin = user?.role === "ADMINISTRATOR";
   const [trips, setTrips] = useState<TripResponse[]>([]);
+  const [dashboardData, setDashboardData] = useState<TravelerDashboardResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const { toasts, removeToast } = useToast();
 
-  useEffect(() => {
+  const loadDashboardData = useCallback(() => {
     if (!isAdmin) {
-      tripApi.getAll()
-        .then(setTrips)
-        .catch(() => {})
+      setLoading(true);
+      setError("");
+      Promise.all([
+        tripApi.getAll(),
+        dashboardApi.getTravelerDashboard().catch(() => null),
+      ])
+        .then(([tripsRes, dashRes]) => {
+          setTrips(tripsRes);
+          setDashboardData(dashRes);
+        })
+        .catch(() => {
+          setError("Unable to load your dashboard data. Please check your connection.");
+        })
         .finally(() => setLoading(false));
     } else {
       setLoading(false);
     }
   }, [isAdmin]);
+
+  useEffect(() => {
+    loadDashboardData();
+  }, [loadDashboardData]);
 
   const stats = useMemo(() => {
     const total = trips.length;
@@ -154,8 +202,7 @@ function DashboardContent() {
                       Welcome back,{" "}
                       <span className="bg-gradient-to-r from-orange-300 via-orange-400 to-rose-400 bg-clip-text text-transparent">
                         {user?.name ?? "Explorer"}
-                      </span>{" "}
-                      ✨
+                      </span>
                     </h1>
 
                     <p className="mt-3 max-w-xl text-sm sm:text-base text-white/70 leading-relaxed">
@@ -172,7 +219,7 @@ function DashboardContent() {
                                    shadow-[0_10px_30px_-10px_rgba(249,115,22,0.6)]
                                    ring-1 ring-white/10 active:scale-95 transition-all duration-150"
                       >
-                        <span className="text-base font-bold leading-none">+</span>
+                        <Plus className="w-4 h-4" />
                         <span>New Trip</span>
                       </Link>
 
@@ -183,7 +230,7 @@ function DashboardContent() {
                                    px-5 py-3 text-sm font-medium text-white/90
                                    active:scale-95 transition-all duration-150"
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 text-white/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/></svg>
+                        <Compass className="w-4 h-4 text-white/70" />
                         <span>All Trips</span>
                       </Link>
                     </div>
@@ -210,7 +257,7 @@ function DashboardContent() {
                         <p className="text-white font-semibold truncate">{user?.name}</p>
                         <p className="text-xs text-white/50 truncate">{user?.email}</p>
                         <p className="mt-1 inline-flex items-center gap-1 text-[11px] text-orange-200/80 font-medium">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                          <MapPin className="w-3 h-3 text-orange-400" />
                           TripNest Traveler
                         </p>
                       </div>
@@ -252,46 +299,285 @@ function DashboardContent() {
                 </div>
               </motion.section>
 
+              {/* ============ ERROR BANNER ============ */}
+              {error && (
+                <div className="glass-banner glass-banner--error flex items-center justify-between gap-3 p-4 rounded-2xl">
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle className="w-5 h-5 text-rose-400 shrink-0" />
+                    <span className="text-sm text-rose-200">{error}</span>
+                  </div>
+                  <button
+                    onClick={loadDashboardData}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 text-xs font-semibold text-white transition-colors"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5" />
+                    <span>Retry</span>
+                  </button>
+                </div>
+              )}
+
               {/* ============ STATS GRID ============ */}
               <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                <StatCard
-                  title="Total Trips"
-                  value={stats.total}
-                  hint="Create your first trip"
-                  icon={<svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" x2="22" y1="12" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>}
-                  accent="from-amber-400 to-orange-500"
-                  softBg="from-orange-500/10 via-amber-500/5 to-transparent"
-                  delay={0.05}
-                />
-                <StatCard
-                  title="Planned"
-                  value={stats.planned}
-                  hint={stats.planned > 0 ? "Ready to embark" : "No upcoming plans"}
-                  icon={<svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>}
-                  accent="from-sky-400 to-blue-500"
-                  softBg="from-sky-500/10 via-blue-500/5 to-transparent"
-                  delay={0.1}
-                />
-                <StatCard
-                  title="Ongoing"
-                  value={stats.ongoing}
-                  hint={stats.ongoing > 0 ? "Enjoy your journey!" : "Currently grounded"}
-                  icon={<svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>}
-                  accent="from-emerald-400 to-teal-500"
-                  softBg="from-emerald-500/10 via-teal-500/5 to-transparent"
-                  delay={0.15}
-                />
-                <StatCard
-                  title="Budget Plan"
-                  value={stats.totalBudget}
-                  hint={stats.totalBudget > 0 ? "Total allocated" : "No budgets set"}
-                  prefix="₹"
-                  icon={<svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg>}
-                  accent="from-purple-400 to-rose-400"
-                  softBg="from-purple-500/10 via-rose-500/5 to-transparent"
-                  delay={0.2}
-                />
+                {loading ? (
+                  [1, 2, 3, 4].map((i) => (
+                    <div key={i} className="p-6 rounded-3xl border border-white/10 bg-white/5 backdrop-blur-2xl space-y-3 animate-pulse">
+                      <div className="flex justify-between items-center">
+                        <div className="h-3.5 bg-white/10 rounded w-1/2" />
+                        <div className="w-8 h-8 rounded-xl bg-white/10" />
+                      </div>
+                      <div className="h-8 bg-white/10 rounded w-1/3" />
+                      <div className="h-3 bg-white/5 rounded w-2/3" />
+                    </div>
+                  ))
+                ) : (
+                  <>
+                    <StatCard
+                      title="Total Trips"
+                      value={stats.total}
+                      hint="Create your first trip"
+                      icon={<Compass className="w-5 h-5 text-amber-300" />}
+                      accent="from-amber-400 to-orange-500"
+                      softBg="from-orange-500/10 via-amber-500/5 to-transparent"
+                      delay={0.05}
+                    />
+                    <StatCard
+                      title="Planned"
+                      value={stats.planned}
+                      hint={stats.planned > 0 ? "Ready to embark" : "No upcoming plans"}
+                      icon={<Calendar className="w-5 h-5 text-sky-300" />}
+                      accent="from-sky-400 to-blue-500"
+                      softBg="from-sky-500/10 via-blue-500/5 to-transparent"
+                      delay={0.1}
+                    />
+                    <StatCard
+                      title="Ongoing"
+                      value={stats.ongoing}
+                      hint={stats.ongoing > 0 ? "Enjoy your journey!" : "Currently grounded"}
+                      icon={<Clock className="w-5 h-5 text-emerald-300" />}
+                      accent="from-emerald-400 to-teal-500"
+                      softBg="from-emerald-500/10 via-teal-500/5 to-transparent"
+                      delay={0.15}
+                    />
+                    <StatCard
+                      title="Budget Plan"
+                      value={stats.totalBudget}
+                      hint={stats.totalBudget > 0 ? "Total allocated" : "No budgets set"}
+                      prefix="₹"
+                      icon={<Wallet className="w-5 h-5 text-purple-300" />}
+                      accent="from-purple-400 to-rose-400"
+                      softBg="from-purple-500/10 via-rose-500/5 to-transparent"
+                      delay={0.2}
+                    />
+                  </>
+                )}
               </section>
+
+              {/* ============ BUDGET OVERVIEW & EXPENSE SUMMARY ============ */}
+              {dashboardData && (dashboardData.budgetOverview || dashboardData.expenseSummary?.length > 0) && (
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                  {/* Budget Burn-Rate Card */}
+                  <div className="lg:col-span-5 rounded-3xl border border-white/10 bg-white/5 backdrop-blur-2xl p-6 sm:p-7 shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs uppercase tracking-wider font-bold text-orange-300">Financial Health</span>
+                        {dashboardData.budgetOverview?.overBudget ? (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-500/20 text-rose-300 border border-rose-400/30 animate-pulse">
+                            <AlertTriangle className="w-3.5 h-3.5 text-rose-400" />
+                            <span>Over Budget</span>
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                            <span>On Track</span>
+                          </span>
+                        )}
+                      </div>
+                      <h3 className="text-xl font-bold text-white mt-2">Combined Budget Overview</h3>
+                      <p className="text-xs text-white/50 mt-0.5">Aggregated across all of your active and past trips</p>
+                    </div>
+
+                    <div className="my-6 space-y-4">
+                      <div className="flex justify-between items-baseline">
+                        <div>
+                          <p className="text-xs text-white/50">Total Spent</p>
+                          <p className="text-2xl sm:text-3xl font-extrabold text-white mt-0.5">
+                            ₹{(dashboardData.budgetOverview?.totalSpent ?? 0).toLocaleString()}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-xs text-white/50">Total Budget</p>
+                          <p className="text-lg font-bold text-white/80 mt-0.5">
+                            ₹{(dashboardData.budgetOverview?.totalBudgeted ?? 0).toLocaleString()}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Burn-rate progress bar */}
+                      <div className="space-y-1.5">
+                        <div className="h-3 rounded-full bg-white/10 overflow-hidden p-0.5 border border-white/10">
+                          <div
+                            className={`h-full rounded-full transition-[width] duration-700 ${
+                              dashboardData.budgetOverview?.overBudget
+                                ? "bg-gradient-to-r from-orange-500 to-rose-500"
+                                : "bg-gradient-to-r from-amber-400 to-emerald-400"
+                            }`}
+                            style={{
+                              width: `${
+                                dashboardData.budgetOverview?.totalBudgeted > 0
+                                  ? Math.min(
+                                      100,
+                                      Math.round(
+                                        ((dashboardData.budgetOverview?.totalSpent ?? 0) /
+                                          dashboardData.budgetOverview.totalBudgeted) *
+                                          100
+                                      )
+                                    )
+                                  : 0
+                              }%`,
+                            }}
+                          />
+                        </div>
+                        <div className="flex justify-between text-[11px] text-white/40">
+                          <span>
+                            {dashboardData.budgetOverview?.totalBudgeted > 0
+                              ? `${Math.round(
+                                  ((dashboardData.budgetOverview?.totalSpent ?? 0) /
+                                    dashboardData.budgetOverview.totalBudgeted) *
+                                    100
+                                )}% spent`
+                              : "0% spent"}
+                          </span>
+                          <span>
+                            Remaining: ₹{(dashboardData.budgetOverview?.remainingBudget ?? 0).toLocaleString()}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 text-xs text-white/60 flex items-center gap-2.5">
+                      <Lightbulb className="w-4 h-4 text-amber-400 shrink-0" />
+                      <span>Manage individual trip budgets in your itinerary details.</span>
+                    </div>
+                  </div>
+
+                  {/* Expense Category Breakdown */}
+                  <div className="lg:col-span-7 rounded-3xl border border-white/10 bg-white/5 backdrop-blur-2xl p-6 sm:p-7 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <h3 className="text-xl font-bold text-white">Expense Breakdown</h3>
+                        <p className="text-xs text-white/50 mt-0.5">Categorized spending across all journeys</p>
+                      </div>
+                      <span className="text-xs font-semibold text-orange-300">
+                        {dashboardData.expenseSummary?.length ?? 0} Categories
+                      </span>
+                    </div>
+
+                    {(!dashboardData.expenseSummary || dashboardData.expenseSummary.length === 0) ? (
+                      <div className="py-12 text-center text-white/40 text-xs">
+                        No expenses logged yet. Add expenses to your trips to see your category summary!
+                      </div>
+                    ) : (
+                      <div className="space-y-3.5 mt-4">
+                        {dashboardData.expenseSummary.map((cat) => {
+                          const totalSum = dashboardData.budgetOverview?.totalSpent ?? 1;
+                          const pct = totalSum > 0 ? Math.round((cat.totalAmount / totalSum) * 100) : 0;
+                          const cfg = CATEGORY_COLORS[cat.category] ?? {
+                            bg: "from-slate-500 to-gray-400",
+                            text: "text-white",
+                            icon: <Tag className="w-3.5 h-3.5 text-slate-400" />,
+                          };
+
+                          return (
+                            <div key={cat.category} className="space-y-1.5">
+                              <div className="flex items-center justify-between text-xs">
+                                <div className="flex items-center gap-2">
+                                  <span>{cfg.icon}</span>
+                                  <span className="font-semibold text-white/90">{cat.category}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span className="font-bold text-white">₹{cat.totalAmount.toLocaleString()}</span>
+                                  <span className="text-white/40 text-[11px]">({pct}%)</span>
+                                </div>
+                              </div>
+                              <div className="h-2 rounded-full bg-white/10 overflow-hidden">
+                                <div
+                                  className={`h-full rounded-full bg-gradient-to-r ${cfg.bg} transition-all duration-700`}
+                                  style={{ width: `${pct}%` }}
+                                />
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* ============ FAVORITE & MOST VISITED DESTINATIONS ============ */}
+              {dashboardData?.destinationStats && (dashboardData.destinationStats.favoriteDestination || dashboardData.destinationStats.mostVisitedDestinations?.length > 0) && (
+                <div className="rounded-3xl border border-white/10 bg-white/5 backdrop-blur-2xl p-6 sm:p-8 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+                  <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-6">
+                    <div>
+                      <h2 className="text-xl font-bold text-white tracking-tight">Favorite & Most-Visited Spots</h2>
+                      <p className="text-xs text-white/50 mt-0.5">Destinations you travel to the most</p>
+                    </div>
+                    <Link href="/destinations" className="text-xs font-semibold text-orange-300 hover:text-orange-200 transition-colors flex items-center gap-1">
+                      <span>Explore all</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </Link>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                    {/* Favorite destination spotlight */}
+                    {dashboardData.destinationStats.favoriteDestination && (
+                      <div className="relative rounded-2xl overflow-hidden border border-amber-400/40 bg-gradient-to-br from-amber-500/15 via-orange-500/10 to-transparent backdrop-blur-xl p-5 shadow-lg flex flex-col justify-between">
+                        <div>
+                          <div className="flex items-center gap-1.5 text-xs font-bold text-amber-300 uppercase tracking-wider mb-2">
+                            <Heart className="w-3.5 h-3.5 text-rose-400 fill-rose-400" />
+                            <span>Favorite Destination</span>
+                          </div>
+                          <h3 className="text-lg font-bold text-white">
+                            {dashboardData.destinationStats.favoriteDestination.name}
+                          </h3>
+                          <p className="text-xs text-white/60 mt-0.5">
+                            {dashboardData.destinationStats.favoriteDestination.city}, {dashboardData.destinationStats.favoriteDestination.country}
+                          </p>
+                        </div>
+                        <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between">
+                          <span className="text-[11px] text-amber-200/80">Saved in Profile</span>
+                          <Link href={`/destinations/${dashboardData.destinationStats.favoriteDestination.id}`} className="text-xs font-bold text-amber-300 hover:text-white transition-colors flex items-center gap-1">
+                            <span>View Spot</span>
+                            <ArrowRight className="w-3 h-3" />
+                          </Link>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Most-visited destinations list */}
+                    {dashboardData.destinationStats.mostVisitedDestinations?.slice(0, dashboardData.destinationStats.favoriteDestination ? 2 : 3).map((item) => (
+                      <div key={item.destinationId} className="relative rounded-2xl overflow-hidden border border-white/10 bg-white/[0.03] backdrop-blur-xl p-5 shadow-lg flex flex-col justify-between hover:border-white/20 transition-all">
+                        <div>
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-xs font-bold text-orange-300 uppercase tracking-wider">Top Destination</span>
+                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-white/10 text-white">
+                              {item.visitCount} {item.visitCount === 1 ? "Trip" : "Trips"}
+                            </span>
+                          </div>
+                          <h3 className="text-lg font-bold text-white">{item.destinationName}</h3>
+                          <p className="text-xs text-white/60 mt-0.5">{item.city}, {item.country}</p>
+                        </div>
+                        <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between">
+                          <span className="text-[11px] text-white/40">Frequent destination</span>
+                          <Link href={`/destinations/${item.destinationId}`} className="text-xs font-bold text-orange-300 hover:text-white transition-colors">
+                            Explore →
+                          </Link>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* ============ RECENT TRIPS SECTION ============ */}
               <motion.section
@@ -316,9 +602,17 @@ function DashboardContent() {
 
                 <div className="mt-6">
                   {loading && (
-                    <div className="flex items-center gap-3 py-6 justify-center">
-                      <div className="h-5 w-5 animate-spin rounded-full border-[3px] border-orange-400 border-t-transparent" />
-                      <p className="text-white/50 text-sm">Loading trips…</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {[1, 2].map((i) => (
+                        <div key={i} className="rounded-2xl border border-white/10 bg-white/[0.04] p-5 space-y-3 animate-pulse">
+                          <div className="flex justify-between items-center">
+                            <div className="h-4 bg-white/10 rounded w-1/3" />
+                            <div className="h-5 bg-white/10 rounded-full w-20" />
+                          </div>
+                          <div className="h-3 bg-white/5 rounded w-1/2" />
+                          <div className="h-3 bg-white/5 rounded w-2/3" />
+                        </div>
+                      ))}
                     </div>
                   )}
 

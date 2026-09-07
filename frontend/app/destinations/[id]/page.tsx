@@ -33,6 +33,8 @@ function Orbs() {
   );
 }
 
+import { AlertTriangle, RefreshCw, ArrowLeft } from "lucide-react";
+
 function DestinationDetailContent() {
   const params = useParams();
   const id = Number(params.id);
@@ -44,35 +46,41 @@ function DestinationDetailContent() {
   const [error, setError] = useState("");
   const [weatherError, setWeatherError] = useState("");
 
-  useEffect(() => {
-    if (isNaN(id)) { setError("Invalid destination."); setLoading(false); return; }
-
-    async function load() {
-      try {
-        const destRes = await apiClient.get<Destination>(`/api/destinations/${id}`);
-        setDestination(destRes.data);
-
-        try {
-          const wRes = await apiClient.get<WeatherData>(`/api/destinations/${id}/weather`);
-          setWeather(wRes.data);
-        } catch (e: unknown) {
-          const axiosErr = e as {response?: {status?: number; data?: {message?: string; error?: string}}; message?: string};
-          const status = axiosErr?.response?.status;
-          const msg = axiosErr?.response?.data?.message
-                   || axiosErr?.response?.data?.error
-                   || axiosErr?.message
-                   || "Live weather unavailable.";
-          console.error("[Weather Error]", status, msg, e);
-          setWeatherError(`Weather error (${status ?? "network"}): ${msg}`);
-        } finally {
-          setWeatherLoading(false);
-        }
-      } catch {
-        setError("Destination not found.");
-      } finally {
-        setLoading(false);
-      }
+  const loadWeather = async (destId: number) => {
+    setWeatherLoading(true);
+    setWeatherError("");
+    try {
+      const wRes = await apiClient.get<WeatherData>(`/api/destinations/${destId}/weather`);
+      setWeather(wRes.data);
+    } catch (e: unknown) {
+      const axiosErr = e as {response?: {status?: number; data?: {message?: string; error?: string}}; message?: string};
+      const status = axiosErr?.response?.status;
+      const msg = axiosErr?.response?.data?.message
+               || axiosErr?.response?.data?.error
+               || axiosErr?.message
+               || "Live weather unavailable.";
+      setWeatherError(`Weather error (${status ?? "network"}): ${msg}`);
+    } finally {
+      setWeatherLoading(false);
     }
+  };
+
+  const load = async () => {
+    if (isNaN(id)) { setError("Invalid destination ID."); setLoading(false); return; }
+    setLoading(true);
+    setError("");
+    try {
+      const destRes = await apiClient.get<Destination>(`/api/destinations/${id}`);
+      setDestination(destRes.data);
+      loadWeather(id);
+    } catch {
+      setError("Destination could not be found or loaded.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     load();
   }, [id]);
 
@@ -81,9 +89,24 @@ function DestinationDetailContent() {
       <Orbs />
       <div className="glass-grain" />
       <Navbar backHref="/destinations" backLabel="Destinations" />
-      <div className="glass-content relative max-w-5xl mx-auto px-6 py-16 text-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-[3px] border-orange-400 border-t-transparent mx-auto mb-4" />
-        <p className="text-white/60 text-sm">Loading destination…</p>
+      <div className="glass-content relative max-w-5xl mx-auto px-4 sm:px-6 py-10 space-y-6">
+        <div className="glass-card overflow-hidden animate-pulse">
+          <div className="w-full h-72 bg-white/10" />
+          <div className="p-7 sm:p-8 space-y-4">
+            <div className="h-8 bg-white/10 rounded w-1/3" />
+            <div className="h-4 bg-white/5 rounded w-1/4" />
+            <div className="h-4 bg-white/5 rounded w-full mt-4" />
+            <div className="h-4 bg-white/5 rounded w-5/6" />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="glass-card p-5 space-y-2 animate-pulse">
+              <div className="h-3 bg-white/10 rounded w-1/3" />
+              <div className="h-5 bg-white/10 rounded w-1/2" />
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -93,8 +116,28 @@ function DestinationDetailContent() {
       <Orbs />
       <div className="glass-grain" />
       <Navbar backHref="/destinations" backLabel="Destinations" />
-      <div className="glass-content relative max-w-5xl mx-auto px-6 py-16 text-center">
-        <p className="text-red-400 text-base">{error || "Destination not found."}</p>
+      <div className="glass-content relative max-w-lg mx-auto px-6 py-20 text-center">
+        <div className="glass-card p-8 space-y-4">
+          <AlertTriangle className="w-10 h-10 text-rose-400 mx-auto" />
+          <h2 className="text-lg font-bold text-white">Destination Error</h2>
+          <p className="text-white/60 text-sm">{error || "Destination not found."}</p>
+          <div className="flex items-center justify-center gap-3 pt-2">
+            <Link
+              href="/destinations"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-sm text-white font-medium transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span>Back to Catalog</span>
+            </Link>
+            <button
+              onClick={load}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 text-sm font-semibold text-white shadow-lg transition-all"
+            >
+              <RefreshCw className="w-4 h-4" />
+              <span>Try Again</span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

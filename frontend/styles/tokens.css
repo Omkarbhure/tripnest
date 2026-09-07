@@ -1,0 +1,87 @@
+/* ── TripNest Design Tokens ──────────────────────────────────── */
+
+:root {
+  /* ── Canvas & Backgrounds ── */
+  --tn-canvas-base: #0a0f1d;
+  --tn-canvas-surface: #0f172a;
+  --tn-canvas-elevated: #1e293b;
+
+  /* ── Glass Morphism Tokens ── */
+  --tn-glass-bg: rgba(255, 255, 255, 0.04);
+  --tn-glass-bg-hover: rgba(255, 255, 255, 0.07);
+  --tn-glass-bg-active: rgba(255, 255, 255, 0.10);
+  --tn-glass-border: rgba(255, 255, 255, 0.10);
+  --tn-glass-border-strong: rgba(255, 255, 255, 0.18);
+  --tn-glass-border-focus: rgba(249, 115, 22, 0.50);
+
+  /* ── Brand & Accent Palettes ── */
+  --tn-brand-500: #f97316;
+  --tn-brand-600: #ea580c;
+  --tn-brand-glow: rgba(249, 115, 22, 0.40);
+  
+  --tn-amber-400: #fbbf24;
+  --tn-amber-500: #f59e0b;
+  
+  --tn-emerald-400: #34d399;
+  --tn-emerald-500: #10b981;
+  
+  --tn-rose-400: #fb7185;
+  --tn-rose-500: #f43f5e;
+  
+  --tn-sky-400: #38bdf8;
+  --tn-sky-500: #0ea5e9;
+  
+  --tn-purple-400: #c084fc;
+  --tn-purple-500: #a855f7;
+
+  /* ── Typography & Foreground ── */
+  --tn-text-primary: #ffffff;
+  --tn-text-secondary: rgba(255, 255, 255, 0.70);
+  --tn-text-muted: rgba(255, 255, 255, 0.50);
+  --tn-text-faint: rgba(255, 255, 255, 0.30);
+
+  /* ── Status Badges (Dark Mode Safe) ── */
+  --tn-status-planned-bg: rgba(59, 130, 246, 0.15);
+  --tn-status-planned-text: #93c5fd;
+  --tn-status-planned-ring: rgba(96, 165, 250, 0.30);
+  
+  --tn-status-ongoing-bg: rgba(16, 185, 129, 0.15);
+  --tn-status-ongoing-text: #6ee7b7;
+  --tn-status-ongoing-ring: rgba(52, 211, 153, 0.30);
+  
+  --tn-status-completed-bg: rgba(245, 158, 11, 0.15);
+  --tn-status-completed-text: #fcd34d;
+  --tn-status-completed-ring: rgba(251, 191, 36, 0.30);
+  
+  --tn-status-cancelled-bg: rgba(244, 63, 94, 0.15);
+  --tn-status-cancelled-text: #fda4af;
+  --tn-status-cancelled-ring: rgba(251, 113, 133, 0.30);
+
+  /* ── Border Radii ── */
+  --tn-radius-sm: 0.5rem;    /* 8px */
+  --tn-radius-md: 0.875rem;  /* 14px */
+  --tn-radius-lg: 1rem;      /* 16px */
+  --tn-radius-xl: 1.5rem;    /* 24px */
+  --tn-radius-2xl: 2rem;     /* 32px */
+  --tn-radius-full: 9999px;
+
+  /* ── Spacing Increments ── */
+  --tn-space-xs: 0.25rem;  /* 4px */
+  --tn-space-sm: 0.5rem;   /* 8px */
+  --tn-space-md: 1rem;     /* 16px */
+  --tn-space-lg: 1.5rem;   /* 24px */
+  --tn-space-xl: 2rem;     /* 32px */
+  --tn-space-2xl: 3rem;    /* 48px */
+
+  /* ── Blur Tokens ── */
+  --tn-blur-sm: 6px;
+  --tn-blur-md: 12px;
+  --tn-blur-lg: 20px;
+  --tn-blur-xl: 32px;
+
+  /* ── Elevation & Shadows ── */
+  --tn-shadow-sm: 0 4px 12px -2px rgba(0, 0, 0, 0.30);
+  --tn-shadow-md: 0 12px 30px -8px rgba(0, 0, 0, 0.45);
+  --tn-shadow-lg: 0 24px 60px -12px rgba(0, 0, 0, 0.60);
+  --tn-shadow-brand: 0 10px 30px -8px rgba(249, 115, 22, 0.50);
+}

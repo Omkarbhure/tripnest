@@ -6,6 +6,23 @@ import { adminApi, destinationApi } from "@/lib/api";
 import { AdminStatsResponse, UserSummaryResponse, Destination } from "@/lib/types";
 import { useToast } from "@/hooks/useToast";
 import Image from "next/image";
+import {
+  Shield,
+  Users,
+  MapPin,
+  Plane,
+  CreditCard,
+  Settings,
+  Lock,
+  Crown,
+  Luggage,
+  Search,
+  RefreshCw,
+  Server,
+  Activity,
+  UserCheck,
+  AlertTriangle,
+} from "lucide-react";
 
 export default function AdminPanel() {
   const [stats, setStats] = useState<AdminStatsResponse | null>(null);
@@ -13,6 +30,7 @@ export default function AdminPanel() {
   const [destinations, setDestinations] = useState<Destination[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState("");
   const [activeTab, setActiveTab] = useState<"users" | "destinations" | "system">("users");
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>("ALL");
@@ -22,6 +40,7 @@ export default function AdminPanel() {
   async function loadAdminData(showToast = false) {
     try {
       if (showToast) setRefreshing(true);
+      setError("");
       const [statsRes, usersRes, destsRes] = await Promise.all([
         adminApi.getStats().catch(() => null),
         adminApi.getUsers().catch(() => []),
@@ -37,6 +56,7 @@ export default function AdminPanel() {
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Failed to load admin data";
+      setError(msg);
       addToast(msg, "error");
     } finally {
       setLoading(false);
@@ -85,7 +105,7 @@ export default function AdminPanel() {
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-purple-400/30 bg-purple-500/15 text-purple-200 text-xs font-bold uppercase tracking-wider mb-3">
-              <span>🛡️</span>
+              <Shield className="w-3.5 h-3.5" />
               <span>Root Administrator Portal</span>
             </div>
             <h1 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
@@ -102,15 +122,7 @@ export default function AdminPanel() {
               disabled={refreshing}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-white/15 bg-white/10 hover:bg-white/15 backdrop-blur-xl text-sm font-semibold text-white transition-all duration-150 active:scale-95 disabled:opacity-50"
             >
-              <svg
-                className={`w-4 h-4 text-purple-300 ${refreshing ? "animate-spin" : ""}`}
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2.2}
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
+              <RefreshCw className={`w-4 h-4 text-purple-300 ${refreshing ? "animate-spin" : ""}`} />
               <span>{refreshing ? "Syncing..." : "Sync Database"}</span>
             </button>
 
@@ -122,36 +134,68 @@ export default function AdminPanel() {
         </div>
       </div>
 
+      {/* ── Error Banner ── */}
+      {error && (
+        <div className="glass-banner glass-banner--error flex items-center justify-between gap-3 p-4 rounded-2xl">
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="w-5 h-5 text-rose-400 shrink-0" />
+            <span className="text-sm text-rose-200">{error}</span>
+          </div>
+          <button
+            onClick={() => loadAdminData()}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/15 text-xs font-semibold text-white transition-colors"
+          >
+            <RefreshCw className="w-3.5 h-3.5" />
+            <span>Retry</span>
+          </button>
+        </div>
+      )}
+
       {/* ── KPI Stat Cards ── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-        <AdminStatCard
-          title="Total Registered Users"
-          value={stats?.totalUsers ?? users.length}
-          icon="👥"
-          accent="from-purple-500 to-indigo-500"
-          subtitle={`${stats?.usersByRole?.["ADMINISTRATOR"] ?? 1} Admin, ${stats?.usersByRole?.["TRAVELER"] ?? users.length - 1} Travelers`}
-        />
-        <AdminStatCard
-          title="Active Destinations"
-          value={stats?.totalDestinations ?? destinations.length}
-          icon="🗺️"
-          accent="from-sky-500 to-cyan-500"
-          subtitle="Seeded in PostgreSQL"
-        />
-        <AdminStatCard
-          title="Total Trips Created"
-          value={stats?.totalTrips ?? 0}
-          icon="✈️"
-          accent="from-amber-500 to-orange-500"
-          subtitle="Across all users"
-        />
-        <AdminStatCard
-          title="Total Expenses Logged"
-          value={stats?.totalExpenses ?? 0}
-          icon="💳"
-          accent="from-emerald-500 to-teal-500"
-          subtitle={`₹${(stats?.totalSpentAmount ?? 0).toLocaleString()} recorded`}
-        />
+        {loading ? (
+          [1, 2, 3, 4].map((i) => (
+            <div key={i} className="p-6 rounded-3xl border border-white/10 bg-white/5 backdrop-blur-2xl space-y-3 animate-pulse">
+              <div className="flex justify-between items-center">
+                <div className="h-3.5 bg-white/10 rounded w-1/2" />
+                <div className="w-8 h-8 rounded-xl bg-white/10" />
+              </div>
+              <div className="h-8 bg-white/10 rounded w-1/3" />
+              <div className="h-3 bg-white/5 rounded w-2/3" />
+            </div>
+          ))
+        ) : (
+          <>
+            <AdminStatCard
+              title="Total Registered Users"
+              value={stats?.totalUsers ?? users.length}
+              icon={<Users className="w-5 h-5 text-purple-300" />}
+              accent="from-purple-500 to-indigo-500"
+              subtitle={`${stats?.usersByRole?.["ADMINISTRATOR"] ?? 1} Admin, ${stats?.usersByRole?.["TRAVELER"] ?? users.length - 1} Travelers`}
+            />
+            <AdminStatCard
+              title="Active Destinations"
+              value={stats?.totalDestinations ?? destinations.length}
+              icon={<MapPin className="w-5 h-5 text-sky-300" />}
+              accent="from-sky-500 to-cyan-500"
+              subtitle="Seeded in PostgreSQL"
+            />
+            <AdminStatCard
+              title="Total Trips Created"
+              value={stats?.totalTrips ?? 0}
+              icon={<Plane className="w-5 h-5 text-amber-300 -rotate-45" />}
+              accent="from-amber-500 to-orange-500"
+              subtitle="Across all users"
+            />
+            <AdminStatCard
+              title="Total Expenses Logged"
+              value={stats?.totalExpenses ?? 0}
+              icon={<CreditCard className="w-5 h-5 text-emerald-300" />}
+              accent="from-emerald-500 to-teal-500"
+              subtitle={`₹${(stats?.totalSpentAmount ?? 0).toLocaleString()} recorded`}
+            />
+          </>
+        )}
       </div>
 
       {/* ── Navigation Tabs ── */}
@@ -164,7 +208,7 @@ export default function AdminPanel() {
               : "text-white/60 hover:text-white hover:bg-white/5 border border-transparent"
           }`}
         >
-          <span>👥</span>
+          <Users className="w-4 h-4" />
           <span>User & Role Management</span>
           <span className="ml-1.5 px-2 py-0.5 rounded-full text-xs bg-white/10 text-white font-medium">
             {users.length}
@@ -179,7 +223,7 @@ export default function AdminPanel() {
               : "text-white/60 hover:text-white hover:bg-white/5 border border-transparent"
           }`}
         >
-          <span>🗺️</span>
+          <MapPin className="w-4 h-4" />
           <span>Destinations Catalogue</span>
           <span className="ml-1.5 px-2 py-0.5 rounded-full text-xs bg-white/10 text-white font-medium">
             {destinations.length}
@@ -194,7 +238,7 @@ export default function AdminPanel() {
               : "text-white/60 hover:text-white hover:bg-white/5 border border-transparent"
           }`}
         >
-          <span>⚙️</span>
+          <Settings className="w-4 h-4" />
           <span>System & Security</span>
         </button>
       </div>
@@ -375,7 +419,7 @@ export default function AdminPanel() {
         >
           <div className="rounded-3xl border border-white/10 bg-white/[0.04] backdrop-blur-xl p-6 space-y-4">
             <h3 className="text-base font-bold text-white flex items-center gap-2">
-              <span>🔐</span>
+              <Lock className="w-5 h-5 text-purple-400" />
               <span>Role-Based Access Control (RBAC)</span>
             </h3>
             <div className="space-y-3 text-xs text-white/70">
@@ -396,7 +440,7 @@ export default function AdminPanel() {
 
           <div className="rounded-3xl border border-white/10 bg-white/[0.04] backdrop-blur-xl p-6 space-y-4">
             <h3 className="text-base font-bold text-white flex items-center gap-2">
-              <span>⚙️</span>
+              <Server className="w-5 h-5 text-sky-400" />
               <span>Server & Integrations</span>
             </h3>
             <div className="space-y-3 text-xs text-white/70">
@@ -433,7 +477,7 @@ function AdminStatCard({
 }: {
   title: string;
   value: number;
-  icon: string;
+  icon: React.ReactNode;
   accent: string;
   subtitle?: string;
 }) {
@@ -458,23 +502,23 @@ function AdminStatCard({
 function RoleBadge({ role }: { role: string }) {
   if (role === "ADMINISTRATOR") {
     return (
-      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-purple-500/20 text-purple-300 border border-purple-400/40">
-        <span>🛡️</span>
+      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-purple-500/20 text-purple-300 border border-purple-400/40">
+        <Shield className="w-3.5 h-3.5 text-purple-300" />
         <span>ADMINISTRATOR</span>
       </span>
     );
   }
   if (role === "GROUP_ADMIN") {
     return (
-      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-400/40">
-        <span>👑</span>
+      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-400/40">
+        <Crown className="w-3.5 h-3.5 text-emerald-300" />
         <span>GROUP_ADMIN</span>
       </span>
     );
   }
   return (
-    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-sky-500/20 text-sky-300 border border-sky-400/40">
-      <span>🧳</span>
+    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-sky-500/20 text-sky-300 border border-sky-400/40">
+      <Luggage className="w-3.5 h-3.5 text-sky-300" />
       <span>TRAVELER</span>
     </span>
   );

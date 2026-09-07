@@ -16,6 +16,16 @@ import FadeIn from "@/components/ui/FadeIn";
 import { StaggerList, StaggerItem } from "@/components/ui/StaggerList";
 import { ToastContainer } from "@/components/ui/Toast";
 import { useToast } from "@/hooks/useToast";
+import {
+  FileText,
+  Calendar,
+  Plus,
+  X,
+  AlertTriangle,
+  MapPin,
+  Pencil,
+  Trash2,
+} from "lucide-react";
 
 const STATUS_PILL: Record<string, string> = {
   PLANNED: "glass-pill glass-pill--planned",
@@ -268,7 +278,7 @@ function TripDetailContent() {
           {/* Trip Overview Card */}
           <div className="glass-card p-7 sm:p-8">
             <div className="glass-icon-chip mb-5">
-              <span className="text-sm">📋</span>
+              <FileText className="w-4 h-4 text-orange-400" />
               <span className="text-sm font-semibold text-white/90">Trip Details</span>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -299,7 +309,7 @@ function TripDetailContent() {
           <div className="glass-card p-7 sm:p-8 space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="glass-icon-chip">
-                <span className="text-lg">🗓️</span>
+                <Calendar className="w-5 h-5 text-orange-400" />
                 <div>
                   <h2 className="text-base font-bold text-white tracking-tight">Daywise Itinerary</h2>
                   <p className="text-xs text-white/50 mt-0.5">
@@ -315,7 +325,7 @@ function TripDetailContent() {
                   onClick={handleOpenAddDay}
                   className="glass-btn-primary px-5 py-2.5 text-sm shrink-0 flex items-center gap-1.5"
                 >
-                  <span>+</span>
+                  <Plus className="w-4 h-4" />
                   <span>Add Day</span>
                 </button>
               )}
@@ -336,7 +346,7 @@ function TripDetailContent() {
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <span className="text-sm">📅</span>
+                        <Calendar className="w-4 h-4 text-orange-400" />
                         <h3 className="text-sm font-semibold text-white">
                           Select Date & Plan Itinerary Day
                         </h3>
@@ -346,7 +356,7 @@ function TripDetailContent() {
                         onClick={() => setShowAddDayForm(false)}
                         className="text-white/50 hover:text-white text-sm"
                       >
-                        ✕
+                        <X className="w-4 h-4" />
                       </button>
                     </div>
 
@@ -387,7 +397,7 @@ function TripDetailContent() {
 
                     {itineraryError && (
                       <div className="glass-banner glass-banner--error text-xs">
-                        <span>⚠️</span>
+                        <AlertTriangle className="w-3.5 h-3.5" />
                         <span>{itineraryError}</span>
                       </div>
                     )}
@@ -457,7 +467,7 @@ function TripDetailContent() {
             {/* Empty State */}
             {itineraries.length === 0 && !showAddDayForm && (
               <div className="rounded-2xl border border-dashed border-white/15 bg-white/[0.02] p-8 text-center space-y-3">
-                <span className="text-3xl block">🗺️</span>
+                <MapPin className="w-8 h-8 text-orange-400/80 mx-auto" />
                 <h3 className="text-sm font-semibold text-white">No days scheduled yet</h3>
                 <p className="text-xs text-white/40 max-w-sm mx-auto">
                   Click &ldquo;+ Add Day&rdquo; to select a date and organize activities day by day.
@@ -466,7 +476,7 @@ function TripDetailContent() {
                   onClick={handleOpenAddDay}
                   className="glass-btn-primary px-6 py-2.5 text-xs font-semibold inline-flex items-center gap-1.5 mt-2"
                 >
-                  <span>📅</span>
+                  <Calendar className="w-4 h-4" />
                   <span>Plan First Day</span>
                 </button>
               </div>
@@ -512,18 +522,17 @@ function TripDetailContent() {
                             <button
                               onClick={() => startEditDay(day)}
                               title="Change date or notes"
-                              className="px-2.5 py-1 rounded-lg text-xs font-semibold text-white/70 hover:text-white bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 transition-colors"
+                              className="px-2.5 py-1 rounded-lg text-xs font-semibold text-white/70 hover:text-white bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 transition-colors inline-flex items-center gap-1"
                             >
-                              ✏️ Edit Date
+                              <Pencil className="w-3.5 h-3.5" />
+                              <span>Edit Date</span>
                             </button>
                             <button
                               onClick={() => handleDeleteDay(day.id, fullIndex + 1)}
                               title="Delete this day"
-                              className="p-1 rounded-lg text-rose-300 hover:text-rose-200 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-400/20 transition-colors"
+                              className="p-1.5 rounded-lg text-rose-300 hover:text-rose-200 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-400/20 transition-colors"
                             >
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                              </svg>
+                              <Trash2 className="w-4 h-4" />
                             </button>
                           </div>
                         </div>

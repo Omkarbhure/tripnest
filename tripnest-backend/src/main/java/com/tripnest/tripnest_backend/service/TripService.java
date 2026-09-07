@@ -5,13 +5,18 @@ import com.tripnest.tripnest_backend.dto.TripResponse;
 import com.tripnest.tripnest_backend.entity.Destination;
 import com.tripnest.tripnest_backend.entity.Itinerary;
 import com.tripnest.tripnest_backend.entity.Trip;
+import com.tripnest.tripnest_backend.entity.TripMember;
 import com.tripnest.tripnest_backend.entity.User;
 import com.tripnest.tripnest_backend.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +31,7 @@ public class TripService {
     private final ActivityRepository activityRepository;
     private final TripMemberRepository tripMemberRepository;
     private final TripJoinRequestRepository joinRequestRepository;
+    private final NotificationService notificationService;
     private final TripAccessService tripAccessService;
 
     @Transactional
@@ -84,6 +90,10 @@ public class TripService {
     ) {
         Trip trip = tripAccessService.checkGroupAdminOrOwnerAccess(id, email);
 
+        LocalDate oldStartDate = trip.getStartDate();
+        LocalDate oldEndDate = trip.getEndDate();
+        Integer oldDestId = trip.getDestination() != null ? trip.getDestination().getId() : null;
+
         trip.setTitle(request.getTitle());
         trip.setStartDate(request.getStartDate());
         trip.setEndDate(request.getEndDate());
@@ -101,10 +111,25 @@ public class TripService {
                             new RuntimeException("Destination not found"));
 
             trip.setDestination(dest);
+        } else {
+            trip.setDestination(null);
         }
 
-        return toResponse(tripRepository.save(trip));
+        Trip savedTrip = tripRepository.save(trip);
+
+        boolean datesChanged = !Objects.equals(oldStartDate, savedTrip.getStartDate())
+                || !Objects.equals(oldEndDate, savedTrip.getEndDate());
+        Integer newDestId = savedTrip.getDestination() != null ? savedTrip.getDestination().getId() : null;
+        boolean destChanged = !Objects.equals(oldDestId, newDestId);
+
+        if (datesChanged || destChanged) {
+            notifyTripMembersOfUpdate(savedTrip, email, datesChanged, destChanged);
+        }
+
+        return toResponse(savedTrip);
+
     }
+
 
     @Transactional
     public void delete(Long id, String email) {
@@ -125,6 +150,46 @@ public class TripService {
         tripRepository.delete(trip);
     }
 
+    private void notifyTripMembersOfUpdate(Trip trip, String modifierEmail, boolean datesChanged, boolean destChanged) {
+        User modifier = userRepository.findByEmail(modifierEmail).orElse(null);
+        String modifierName = modifier != null ? modifier.getName() : "A trip manager";
+
+        String changeSummary;
+        if (datesChanged && destChanged) {
+            changeSummary = "travel dates and destination";
+        } else if (datesChanged) {
+            changeSummary = "travel dates (" + trip.getStartDate() + " to " + trip.getEndDate() + ")";
+        } else {
+            changeSummary = "destination (" + (trip.getDestination() != null ? trip.getDestination().getName() : "updated") + ")";
+        }
+
+        String title = "Travel Update: " + trip.getTitle();
+        String message = modifierName + " updated the " + changeSummary + " for trip \"" + trip.getTitle() + "\".";
+
+        // Collect other members + owner (excluding modifier)
+        Set<User> recipients = new HashSet<>();
+        if (trip.getUser() != null && !trip.getUser().getEmail().equalsIgnoreCase(modifierEmail)) {
+            recipients.add(trip.getUser());
+        }
+
+        List<TripMember> members = tripMemberRepository.findByTripIdWithUser(trip.getId());
+        for (TripMember member : members) {
+            if (member.getUser() != null && !member.getUser().getEmail().equalsIgnoreCase(modifierEmail)) {
+                recipients.add(member.getUser());
+            }
+        }
+
+        for (User recipient : recipients) {
+            notificationService.createNotification(
+                    recipient,
+                    title,
+                    message,
+                    "TRAVEL_UPDATE",
+                    trip.getId()
+            );
+        }
+    }
+
     private TripResponse toResponse(Trip t) {
         return new TripResponse(
                 t.getId(),
@@ -141,4 +206,4 @@ public class TripService {
                 t.getCreatedAt()
         );
     }
-}
+}

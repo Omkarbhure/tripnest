@@ -181,11 +181,21 @@ export const destinationApi = {
 };
 
 // =========================
+// DASHBOARD API
+// =========================
+export const dashboardApi = {
+    getTravelerDashboard: () =>
+        request<import("./types").TravelerDashboardResponse>("/api/dashboard", {
+            method: "GET",
+        }),
+};
+
+// =========================
 // ADMIN API
 // =========================
 export const adminApi = {
     getDashboard: () =>
-        request<string>("/api/admin/dashboard", {
+        request<import("./types").AdminDashboardResponse>("/api/admin/dashboard", {
             method: "GET",
         }),
 

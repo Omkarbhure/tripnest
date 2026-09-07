@@ -1,11 +1,11 @@
 package com.tripnest.tripnest_backend.controller;
 
-import com.tripnest.tripnest_backend.dto.AdminStatsResponse;
-import com.tripnest.tripnest_backend.dto.UpdateRoleRequest;
-import com.tripnest.tripnest_backend.dto.UserSummaryResponse;
+import com.tripnest.tripnest_backend.dto.*;
 import com.tripnest.tripnest_backend.service.AdminService;
+import com.tripnest.tripnest_backend.service.AttractionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -19,10 +19,16 @@ import java.util.List;
 public class AdminController {
 
     private final AdminService adminService;
+    private final AttractionService attractionService;
 
     @GetMapping("/dashboard")
-    public String adminDashboard(Authentication authentication) {
-        return "Welcome, Administrator " + authentication.getName() + "! This is the admin-only dashboard.";
+    public AdminDashboardResponse adminDashboard() {
+        return adminService.getAdminDashboard();
+    }
+
+    @GetMapping("/dashboard/analytics")
+    public AdminDashboardResponse getAdminDashboardAnalytics() {
+        return adminService.getAdminDashboard();
     }
 
     @GetMapping("/stats")
@@ -38,5 +44,14 @@ public class AdminController {
     @PutMapping("/users/{id}/role")
     public UserSummaryResponse updateUserRole(@PathVariable Integer id, @Valid @RequestBody UpdateRoleRequest request) {
         return adminService.updateUserRole(id, request.getRoleName());
+    }
+
+    @PostMapping("/destinations/{destinationId}/attractions")
+    @ResponseStatus(HttpStatus.CREATED)
+    public AttractionResponse createAttraction(
+            @PathVariable Integer destinationId,
+            @Valid @RequestBody AttractionRequest request
+    ) {
+        return attractionService.createAttraction(destinationId, request);
     }
 }

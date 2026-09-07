@@ -36,6 +36,65 @@ export interface AdminStatsResponse {
     usersByRole: Record<string, number>;
 }
 
+export interface AdminDashboardResponse {
+    userAnalytics: {
+        totalUsers: number;
+        usersByRole: Record<string, number>;
+    };
+    tripAnalytics: {
+        totalTrips: number;
+        activeTrips: number;
+        completedTrips: number;
+        plannedTrips: number;
+        cancelledTrips: number;
+    };
+    destinationAnalytics: {
+        totalDestinations: number;
+        popularDestinations: {
+            destinationId: number;
+            destinationName: string;
+            country: string;
+            city: string;
+            imageUrl: string;
+            tripCount: number;
+        }[];
+    };
+    platformStats: {
+        totalExpensesLogged: number;
+        totalExpenseAmount: number;
+        totalNotificationsSent: number;
+    };
+}
+
+export interface TravelerDashboardResponse {
+    upcomingTrips: TripResponse[];
+    budgetOverview: {
+        totalBudgeted: number;
+        totalSpent: number;
+        remainingBudget: number;
+        currency: string;
+        overBudget: boolean;
+    };
+    expenseSummary: CategorySummary[];
+    destinationStats: {
+        favoriteDestination: Destination | null;
+        mostVisitedDestinations: {
+            destinationId: number;
+            destinationName: string;
+            country: string;
+            city: string;
+            imageUrl: string;
+            visitCount: number;
+        }[];
+    };
+    travelStats: {
+        totalTripsTaken: number;
+        totalDestinationsVisited: number;
+        totalCountriesVisited: number;
+        totalAmountSpent: number;
+    };
+}
+
 // ===========================
 // BUDGET
 // ===========================
@@ -120,8 +179,18 @@ export interface NotificationResponse {
     userId: number;
     title: string;
     message: string;
-    type: "TRIP_INVITE" | "JOIN_REQUEST" | "JOIN_APPROVED" | "JOIN_REJECTED" | "SYSTEM";
+    type:
+        | "TRIP_INVITE"
+        | "JOIN_REQUEST"
+        | "JOIN_APPROVED"
+        | "JOIN_REJECTED"
+        | "TRIP_REMINDER"
+        | "ACTIVITY_REMINDER"
+        | "BUDGET_ALERT"
+        | "TRAVEL_UPDATE"
+        | "SYSTEM";
     relatedTripId: number | null;
     read: boolean;
     createdAt: string;
 }
+

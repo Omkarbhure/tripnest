@@ -23,5 +23,17 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long> {
     @Query("SELECT e.category, SUM(e.amount) FROM Expense e WHERE e.trip.id = :tripId GROUP BY e.category ORDER BY SUM(e.amount) DESC")
     List<Object[]> sumByCategory(@Param("tripId") Long tripId);
 
+    // Group expenses by category across all trips accessible to the user
+    @Query("SELECT e.category, SUM(e.amount) FROM Expense e WHERE e.trip.id IN (SELECT t.id FROM Trip t WHERE t.user.email = :email OR t.id IN (SELECT tm.trip.id FROM TripMember tm WHERE tm.user.email = :email)) GROUP BY e.category ORDER BY SUM(e.amount) DESC")
+    List<Object[]> sumByCategoryForUser(@Param("email") String email);
+
+    // Sum of all expenses across all trips accessible to the user
+    @Query("SELECT COALESCE(SUM(e.amount), 0) FROM Expense e WHERE e.trip.id IN (SELECT t.id FROM Trip t WHERE t.user.email = :email OR t.id IN (SELECT tm.trip.id FROM TripMember tm WHERE tm.user.email = :email))")
+    BigDecimal sumTotalSpentForUser(@Param("email") String email);
+
+    // Platform-level total amount spent across all expenses
+    @Query("SELECT COALESCE(SUM(e.amount), 0) FROM Expense e")
+    BigDecimal sumTotalSpentPlatform();
+
     void deleteByTripId(Long tripId);
 }
