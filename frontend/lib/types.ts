@@ -1,4 +1,4 @@
-export interface RegisterRequest { name: string; email: string; password: string; }
+﻿export interface RegisterRequest { name: string; email: string; password: string; }
 export interface LoginRequest { email: string; password: string; }
 export interface AuthResponse { id: number; name: string; email: string; role?: string; message: string; token: string | null; }
 export interface AuthUser { id: number; name: string; email: string; role?: string; token: string; address?: string | null; profilePhotoUrl?: string | null; }
@@ -21,10 +21,6 @@ export interface UpdateUserRequest { name: string; email: string; address?: stri
 export interface ResetPasswordRequest { currentPassword: string; newPassword: string; confirmPassword: string; }
 export interface PhotoUploadResponse { profilePhotoUrl: string; message: string; }
 export interface MessageResponse { message: string; }
-
-// ===========================
-// ADMIN
-// ===========================
 export interface UserSummaryResponse { id: number; name: string; email: string; role: string; }
 export interface UpdateRoleRequest { roleName: string; }
 export interface AdminStatsResponse {
@@ -94,16 +90,10 @@ export interface TravelerDashboardResponse {
         totalAmountSpent: number;
     };
 }
-
-// ===========================
 // BUDGET
-// ===========================
 export interface BudgetRequest { totalBudget: number; spentAmount?: number; currency?: string; notes?: string; }
 export interface BudgetResponse { id: number; tripId: number; tripTitle: string; totalBudget: number; spentAmount: number; remainingBudget: number; overBudget: boolean; currency: string; notes: string | null; createdAt: string; updatedAt: string; }
-
-// ===========================
 // EXPENSE
-// ===========================
 export const EXPENSE_CATEGORIES = ["TRANSPORTATION", "HOTEL", "FOOD", "SHOPPING", "ENTERTAINMENT", "MISCELLANEOUS"] as const;
 export type ExpenseCategory = typeof EXPENSE_CATEGORIES[number];
 
@@ -111,10 +101,7 @@ export interface ExpenseRequest { category: string; amount: number; expenseDate:
 export interface ExpenseResponse { id: number; tripId: number; category: string; amount: number; expenseDate: string; description: string | null; receiptUrl: string | null; payerName: string; payerEmail: string; createdAt: string; }
 export interface CategorySummary { category: string; totalAmount: number; }
 export interface RemainingBudgetResponse { tripId: number; totalBudget: number; totalExpenses: number; remainingBudget: number; currency: string; overBudget: boolean; }
-
-// ===========================
 // TRIP MEMBERS & COLLABORATION
-// ===========================
 export type TripMemberRole = "OWNER" | "GROUP_ADMIN" | "MEMBER";
 
 export interface TripMemberResponse {
@@ -170,10 +157,7 @@ export interface TripJoinResponse {
     createdAt: string;
     respondedAt: string | null;
 }
-
-// ===========================
 // NOTIFICATIONS
-// ===========================
 export interface NotificationResponse {
     id: number;
     userId: number;

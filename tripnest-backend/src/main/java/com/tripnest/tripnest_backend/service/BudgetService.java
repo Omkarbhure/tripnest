@@ -1,4 +1,4 @@
-package com.tripnest.tripnest_backend.service;
+﻿package com.tripnest.tripnest_backend.service;
 
 import com.tripnest.tripnest_backend.dto.BudgetRequest;
 import com.tripnest.tripnest_backend.dto.BudgetResponse;
@@ -17,10 +17,7 @@ public class BudgetService {
 
     private final BudgetRepository budgetRepository;
     private final TripAccessService tripAccessService;
-
-    // =========================================================
     // CREATE — POST /api/trips/{tripId}/budget
-    // =========================================================
     @Transactional
     public BudgetResponse createBudget(Long tripId, BudgetRequest request, String email) {
 
@@ -55,11 +52,7 @@ public class BudgetService {
 
         return toResponse(budgetRepository.save(budget));
     }
-
-
-    // =========================================================
     // UPDATE — PUT /api/trips/{tripId}/budget
-    // =========================================================
     @Transactional
     public BudgetResponse updateBudget(Long tripId, BudgetRequest request, String email) {
 
@@ -90,11 +83,7 @@ public class BudgetService {
 
         return toResponse(budgetRepository.save(budget));
     }
-
-
-    // =========================================================
     // GET — GET /api/trips/{tripId}/budget
-    // =========================================================
     @Transactional(readOnly = true)
     public BudgetResponse getBudget(Long tripId, String email) {
 

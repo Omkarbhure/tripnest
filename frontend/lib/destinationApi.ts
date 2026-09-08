@@ -1,4 +1,4 @@
-import apiClient from "./apiClient";
+﻿import apiClient from "./apiClient";
 import {
     AuthResponse,
     LoginRequest,
@@ -8,18 +8,6 @@ import {
     Destination,
     AuthUser,
 } from "./types";
-
-// =========================
-// DATABASE DESTINATION
-// =========================
-
-
-
-
-// =========================
-// OPENSTREETMAP SEARCH RESULT
-// =========================
-
 export interface SearchDestination {
     place_id: number;
     lat: string;
@@ -37,11 +25,7 @@ export interface SearchDestination {
         country_code?: string;
     };
 }
-
-
-// =========================
 // WEATHER
-// =========================
 
 export interface WeatherInfo {
     name?: string;
@@ -64,12 +48,6 @@ export interface WeatherInfo {
         speed?: number;
     };
 }
-
-
-// =========================
-// GET POPULAR DESTINATIONS
-// =========================
-
 export async function getPopularDestinations(): Promise<Destination[]> {
 
     const response = await apiClient.get<Destination[]>(
@@ -78,12 +56,6 @@ export async function getPopularDestinations(): Promise<Destination[]> {
 
     return response.data;
 }
-
-
-// =========================
-// GET DESTINATION BY ID
-// =========================
-
 export async function getDestinationById(
     id: number
 ): Promise<Destination> {
@@ -94,12 +66,8 @@ export async function getDestinationById(
 
     return response.data;
 }
-
-
-// =========================
 // SEARCH DESTINATIONS
 // OPENSTREETMAP / NOMINATIM
-// =========================
 
 export async function searchDestinations(
     query: string
@@ -116,12 +84,7 @@ export async function searchDestinations(
 
     return response.data;
 }
-
-
-// =========================
-// WEATHER FOR DATABASE
 // DESTINATION
-// =========================
 
 export async function getDestinationWeather(
     id: number
@@ -139,12 +102,7 @@ export const userApi = {
         return response.data;
     },
 };
-
-
-// =========================
-// WEATHER FOR OPENSTREETMAP
 // SEARCH RESULT
-// =========================
 
 export async function getWeatherByCoordinates(
     latitude: number,

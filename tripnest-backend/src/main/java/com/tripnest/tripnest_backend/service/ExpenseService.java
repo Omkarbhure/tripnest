@@ -33,10 +33,7 @@ public class ExpenseService {
     private final NotificationRepository notificationRepository;
     private final NotificationService notificationService;
     private final TripAccessService tripAccessService;
-
-    // ============================================================
     // CREATE  POST /api/trips/{tripId}/expenses
-    // ============================================================
     @Transactional
     public ExpenseResponse createExpense(Long tripId, ExpenseRequest req, String payerEmail) {
 
@@ -70,11 +67,7 @@ public class ExpenseService {
 
         return toResponse(saved);
     }
-
-
-    // ============================================================
     // LIST  GET /api/trips/{tripId}/expenses
-    // ============================================================
     @Transactional(readOnly = true)
     public List<ExpenseResponse> listExpenses(Long tripId, String email) {
 
@@ -85,10 +78,7 @@ public class ExpenseService {
                 .map(this::toResponse)
                 .toList();
     }
-
-    // ============================================================
     // UPDATE  PUT /api/trips/{tripId}/expenses/{expenseId}
-    // ============================================================
     @Transactional
     public ExpenseResponse updateExpense(Long tripId, Long expenseId, ExpenseRequest req, String email) {
 
@@ -131,9 +121,6 @@ public class ExpenseService {
         return toResponse(saved);
     }
 
-    // ============================================================
-    // DELETE  DELETE /api/trips/{tripId}/expenses/{expenseId}
-    // ============================================================
     @Transactional
     public void deleteExpense(Long tripId, Long expenseId, String email) {
 
@@ -150,10 +137,7 @@ public class ExpenseService {
 
         expenseRepository.delete(expense);
     }
-
-    // ============================================================
     // CATEGORY SUMMARY  GET /api/trips/{tripId}/expenses/summary
-    // ============================================================
     @Transactional(readOnly = true)
     public List<CategorySummary> getCategorySummary(Long tripId, String email) {
 
@@ -167,10 +151,7 @@ public class ExpenseService {
                 ))
                 .toList();
     }
-
-    // ============================================================
     // REMAINING BUDGET  GET /api/trips/{tripId}/expenses/remaining
-    // ============================================================
     @Transactional(readOnly = true)
     public RemainingBudgetResponse getRemainingBudget(Long tripId, String email) {
 
@@ -193,10 +174,7 @@ public class ExpenseService {
                 totalExpenses.compareTo(budget.getTotalBudget()) > 0
         );
     }
-
-    // ============================================================
     // PRIVATE HELPERS
-    // ============================================================
 
     private void checkAndTriggerBudgetAlerts(Trip trip, BigDecimal spentBefore, BigDecimal spentAfter) {
         if (trip == null) {

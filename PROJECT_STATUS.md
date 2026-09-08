@@ -115,26 +115,5 @@ TripNest is an interactive, full-stack travel platform for individual travelers 
 * `PUT /api/notifications/{id}/read` &mdash; Mark notification as read
 * `PUT /api/notifications/read-all` &mdash; Mark all as read
 
----
 
-## 5. Running & Building Locally
-
-### Run Backend
-```powershell
-cd tripnest-backend
-.\mvnw.cmd spring-boot:run
-```
-
-### Run Frontend
-```powershell
-cd frontend
-npm run dev
-```
-
-### Run Tests
-```powershell
-cd tripnest-backend
-.\mvnw.cmd test
-```
-*(All 14/14 automated integration tests passing)*
 

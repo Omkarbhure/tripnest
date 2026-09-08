@@ -49,12 +49,6 @@ async function request<T>(
 
     return data as T;
 }
-
-
-// =========================
-// AUTH API
-// =========================
-
 export const authApi = {
 
     register: (body: RegisterRequest) =>
@@ -69,11 +63,7 @@ export const authApi = {
             body: JSON.stringify(body),
         }),
 };
-
-
-// =========================
 // TRIP API
-// =========================
 
 export const tripApi = {
 
@@ -117,12 +107,8 @@ export const userApi = {
             body: JSON.stringify(body),
         }),
 };
-// =========================
 // DESTINATION API
-// =========================
-// =========================
 // DESTINATION API
-// =========================
 
 export const destinationApi = {
 
@@ -179,10 +165,7 @@ export const destinationApi = {
             }
         ),
 };
-
-// =========================
 // DASHBOARD API
-// =========================
 export const dashboardApi = {
     getTravelerDashboard: () =>
         request<import("./types").TravelerDashboardResponse>("/api/dashboard", {
@@ -190,9 +173,6 @@ export const dashboardApi = {
         }),
 };
 
-// =========================
-// ADMIN API
-// =========================
 export const adminApi = {
     getDashboard: () =>
         request<import("./types").AdminDashboardResponse>("/api/admin/dashboard", {

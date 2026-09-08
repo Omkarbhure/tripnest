@@ -1,4 +1,4 @@
-package com.tripnest.tripnest_backend.service;
+﻿package com.tripnest.tripnest_backend.service;
 
 import com.tripnest.tripnest_backend.dto.DestinationResponse;
 import com.tripnest.tripnest_backend.entity.Destination;
@@ -22,43 +22,25 @@ public class DestinationService {
 
     private final DestinationRepository destinationRepository;
     private final RestTemplate restTemplate;
-
-    // =========================
     // OPENWEATHER CONFIGURATION
-    // =========================
 
     @Value("${openweather.api.key}")
     private String weatherApiKey;
 
     @Value("${openweather.api.url}")
     private String weatherApiUrl;
-
-    // =========================
     // OPENSTREETMAP / NOMINATIM
-    // =========================
 
     @Value("${nominatim.api.url}")
     private String nominatimApiUrl;
-
-
-    // =========================
-    // GET ALL DESTINATIONS
-    // =========================
-
-    public List<DestinationResponse> listAll() {
+public List<DestinationResponse> listAll() {
 
         return destinationRepository.findAll()
                 .stream()
                 .map(this::toResponse)
                 .toList();
     }
-
-
-    // =========================
-    // GET DESTINATION BY ID
-    // =========================
-
-    public DestinationResponse getById(Integer id) {
+public DestinationResponse getById(Integer id) {
 
         Destination destination =
                 destinationRepository.findById(id)
@@ -70,13 +52,7 @@ public class DestinationService {
 
         return toResponse(destination);
     }
-
-
-    // =========================
-    // GET POPULAR DESTINATIONS
-    // =========================
-
-    public List<DestinationResponse> getPopular() {
+public List<DestinationResponse> getPopular() {
 
         return destinationRepository.findAll()
                 .stream()
@@ -84,13 +60,7 @@ public class DestinationService {
                 .map(this::toResponse)
                 .toList();
     }
-
-
-    // =========================
-    // WEATHER FOR DATABASE DESTINATION
-    // =========================
-
-    @SuppressWarnings("unchecked")
+@SuppressWarnings("unchecked")
     public Map<String, Object> getWeather(Integer id) {
 
         Destination destination =
@@ -141,12 +111,7 @@ public class DestinationService {
             );
         }
     }
-
-
-    // =========================
-    // WEATHER FOR OPENSTREETMAP
-    // SEARCH RESULT
-    // =========================
+// SEARCH RESULT
 
     @SuppressWarnings("unchecked")
     public Map<String, Object> getWeatherByCoordinates(
@@ -181,11 +146,7 @@ public class DestinationService {
             );
         }
     }
-
-
-    // =========================
     // OPENSTREETMAP / NOMINATIM SEARCH
-    // =========================
 
     @SuppressWarnings("unchecked")
     public List<Map<String, Object>> searchDestinations(
@@ -231,11 +192,7 @@ public class DestinationService {
             );
         }
     }
-
-
-    // =========================
     // SAVE DESTINATION FROM SEARCH
-    // =========================
 
     public DestinationResponse saveFromSearch(
             Map<String, Object> data
@@ -293,11 +250,7 @@ public class DestinationService {
 
         return toResponse(saved);
     }
-
-
-    // =========================
     // ENTITY → RESPONSE DTO
-    // =========================
 
     private DestinationResponse toResponse(
             Destination d
