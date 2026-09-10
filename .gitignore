@@ -10,8 +10,10 @@ tripnest-backend/target/
 build/
 
 # Secrets and local config
-**/application.properties
+# application.properties uses env variables with safe defaults
+!**/src/main/resources/application.properties
 !**/application.properties.example
+.env
 .env
 .env.local
 .env*.local
