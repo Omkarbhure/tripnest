@@ -10,7 +10,7 @@ import {
     UserSummaryResponse,
     AdminStatsResponse,
 } from "./types";
-import { getUser } from "./auth";
+import { getUser, removeUser } from "./auth";
 
 const BASE_URL = "http://localhost:8081";
 
@@ -18,7 +18,6 @@ async function request<T>(
     endpoint: string,
     options: RequestInit = {}
 ): Promise<T> {
-
     const user = getUser();
 
     const headers: Record<string, string> = {
@@ -31,12 +30,27 @@ async function request<T>(
         headers["Authorization"] = `Bearer ${user.token}`;
     }
 
-    const res = await fetch(`${BASE_URL}${endpoint}`, {
-        ...options,
-        headers,
-    });
+    let res: Response;
+    try {
+        res = await fetch(`${BASE_URL}${endpoint}`, {
+            ...options,
+            headers,
+        });
+    } catch (networkError: unknown) {
+        if (typeof window !== "undefined" && !navigator.onLine) {
+            throw new Error("You are currently offline. Please check your internet connection.");
+        }
+        throw new Error("Unable to connect to the TripNest server. Please ensure the backend is running.");
+    }
 
-    const data = res.status === 204 ? undefined : await res.json();
+    if (res.status === 401) {
+        removeUser();
+        if (typeof window !== "undefined" && !window.location.pathname.includes("/login")) {
+            window.location.href = "/login?session_expired=true";
+        }
+    }
+
+    const data = res.status === 204 ? undefined : await res.json().catch(() => undefined);
 
     if (!res.ok) {
         const msg =
@@ -61,6 +75,24 @@ export const authApi = {
         request<AuthResponse>("/api/auth/login", {
             method: "POST",
             body: JSON.stringify(body),
+        }),
+
+    sendForgotPasswordOtp: (email: string) =>
+        request<{ message: string }>("/api/auth/forgot-password", {
+            method: "POST",
+            body: JSON.stringify({ email }),
+        }),
+
+    verifyOtp: (email: string, otp: string) =>
+        request<{ message: string }>("/api/auth/verify-otp", {
+            method: "POST",
+            body: JSON.stringify({ email, otp }),
+        }),
+
+    resetPasswordWithOtp: (email: string, otp: string, newPassword: string) =>
+        request<{ message: string }>("/api/auth/reset-password", {
+            method: "POST",
+            body: JSON.stringify({ email, otp, newPassword }),
         }),
 };
 // TRIP API

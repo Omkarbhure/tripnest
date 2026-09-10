@@ -36,7 +36,7 @@ export default function Navbar({ backHref, backLabel }: NavbarProps) {
           <div className="flex items-center gap-1.5">
             <span className="text-[1.1rem] font-bold tracking-tight leading-none text-white">TripNest</span>
             {isAdmin && (
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-purple-500/20 text-purple-300 border border-purple-400/40">
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-orange-500/10 text-orange-400 border border-orange-500/20">
                 Admin Panel
               </span>
             )}
@@ -44,12 +44,7 @@ export default function Navbar({ backHref, backLabel }: NavbarProps) {
         </Link>
 
         {/* Nav items */}
-        <motion.div
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.2 }}
-          className="flex items-center gap-1 sm:gap-2"
-        >
+        <div className="flex items-center gap-1 sm:gap-2">
           {backHref && (
             <Link
               href={backHref}
@@ -64,7 +59,7 @@ export default function Navbar({ backHref, backLabel }: NavbarProps) {
             <>
               <Link
                 href="/dashboard"
-                className="inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-sm font-semibold text-purple-300 bg-purple-500/10 border border-purple-400/30 transition-all duration-150"
+                className="inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-sm font-semibold text-orange-400 bg-orange-500/10 border border-orange-500/30 transition-all duration-150"
               >
                 <Shield className="w-4 h-4" />
                 <span>Control Center</span>
@@ -128,7 +123,7 @@ export default function Navbar({ backHref, backLabel }: NavbarProps) {
             <LogOut className="w-3.5 h-3.5" />
             <span>Sign out</span>
           </button>
-        </motion.div>
+        </div>
       </div>
     </nav>
   );

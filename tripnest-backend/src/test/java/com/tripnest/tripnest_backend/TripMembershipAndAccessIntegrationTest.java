@@ -2,6 +2,7 @@ package com.tripnest.tripnest_backend;
 
 import com.tripnest.tripnest_backend.dto.*;
 import com.tripnest.tripnest_backend.entity.*;
+import com.tripnest.tripnest_backend.entity.Role;
 import com.tripnest.tripnest_backend.repository.*;
 import com.tripnest.tripnest_backend.service.*;
 import org.junit.jupiter.api.BeforeEach;

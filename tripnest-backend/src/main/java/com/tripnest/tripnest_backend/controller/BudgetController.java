@@ -1,4 +1,4 @@
-﻿package com.tripnest.tripnest_backend.controller;
+package com.tripnest.tripnest_backend.controller;
 
 import com.tripnest.tripnest_backend.dto.BudgetRequest;
 import com.tripnest.tripnest_backend.dto.BudgetResponse;

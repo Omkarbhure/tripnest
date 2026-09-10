@@ -1,4 +1,4 @@
-﻿package com.tripnest.tripnest_backend.service;
+package com.tripnest.tripnest_backend.service;
 
 import com.tripnest.tripnest_backend.dto.DestinationResponse;
 import com.tripnest.tripnest_backend.entity.Destination;

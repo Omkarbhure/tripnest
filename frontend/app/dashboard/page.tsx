@@ -141,36 +141,38 @@ function DashboardContent() {
     : "TN";
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#0f172a] text-white font-sans selection:bg-orange-500/30 selection:text-orange-200">
+    <div className={`relative min-h-screen overflow-hidden ${isAdmin ? "bg-white text-slate-900" : "bg-[#0f172a] text-white"} font-sans selection:bg-orange-500/30 selection:text-orange-600`}>
       {/* ============ AMBIENT BACKGROUND GLOW ============ */}
-      <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-        <motion.div
-          className="absolute -top-40 -left-20 h-[32rem] w-[32rem] rounded-full blur-3xl opacity-40"
-          style={{ background: isAdmin ? "radial-gradient(circle at 30% 30%, #8b5cf6 0%, #6366f1 40%, transparent 70%)" : "radial-gradient(circle at 30% 30%, #fb923c 0%, #f97316 40%, transparent 70%)" }}
-          animate={{ x: [0, 30, 0], y: [0, -20, 0] }}
-          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="absolute top-1/3 -right-20 h-[30rem] w-[30rem] rounded-full blur-3xl opacity-35"
-          style={{ background: "radial-gradient(circle at 70% 30%, #6366f1 0%, #4338ca 40%, transparent 70%)" }}
-          animate={{ x: [0, -30, 0], y: [0, 25, 0] }}
-          transition={{ duration: 22, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-        />
-        <motion.div
-          className="absolute -bottom-20 left-1/3 h-[28rem] w-[28rem] rounded-full blur-3xl opacity-30"
-          style={{ background: "radial-gradient(circle at 50% 50%, #06b6d4 0%, #0284c7 40%, transparent 70%)" }}
-          animate={{ y: [0, -30, 0], x: [0, 20, 0] }}
-          transition={{ duration: 24, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-        />
-        {/* subtle grain overlay */}
-        <div
-          className="absolute inset-0 opacity-[0.06] mix-blend-overlay"
-          style={{
-            backgroundImage:
-              "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.5'/></svg>\")",
-          }}
-        />
-      </div>
+      {!isAdmin && (
+        <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+          <motion.div
+            className="absolute -top-40 -left-20 h-[32rem] w-[32rem] rounded-full blur-3xl opacity-40"
+            style={{ background: "radial-gradient(circle at 30% 30%, #fb923c 0%, #f97316 40%, transparent 70%)" }}
+            animate={{ x: [0, 30, 0], y: [0, -20, 0] }}
+            transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <motion.div
+            className="absolute top-1/3 -right-20 h-[30rem] w-[30rem] rounded-full blur-3xl opacity-35"
+            style={{ background: "radial-gradient(circle at 70% 30%, #6366f1 0%, #4338ca 40%, transparent 70%)" }}
+            animate={{ x: [0, -30, 0], y: [0, 25, 0] }}
+            transition={{ duration: 22, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+          />
+          <motion.div
+            className="absolute -bottom-20 left-1/3 h-[28rem] w-[28rem] rounded-full blur-3xl opacity-30"
+            style={{ background: "radial-gradient(circle at 50% 50%, #06b6d4 0%, #0284c7 40%, transparent 70%)" }}
+            animate={{ y: [0, -30, 0], x: [0, 20, 0] }}
+            transition={{ duration: 24, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+          />
+          {/* subtle grain overlay */}
+          <div
+            className="absolute inset-0 opacity-[0.06] mix-blend-overlay"
+            style={{
+              backgroundImage:
+                "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.5'/></svg>\")",
+            }}
+          />
+        </div>
+      )}
 
       <div className="relative z-10">
         <Navbar />

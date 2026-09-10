@@ -1,8 +1,10 @@
 "use client";
 
 import { FormEvent, useEffect, useState, useRef } from "react";
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import { Compass } from "lucide-react";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Navbar from "@/components/Navbar";
 import { getTripById, updateTrip } from "@/lib/tripApi";
@@ -95,13 +97,17 @@ function EditTripContent() {
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
+    if (!title.trim()) { setError("Trip title is required."); return; }
+    if (!startDate) { setError("Start date is required."); return; }
+    if (!endDate) { setError("End date is required."); return; }
+    if (endDate < startDate) { setError("End date cannot be before start date."); return; }
     try {
       setSaving(true); setError("");
       await updateTrip(id, {
         title: title.trim(),
         ...(selectedDest ? { destinationId: selectedDest.id } : {}),
-        ...(startDate ? { startDate } : {}),
-        ...(endDate ? { endDate } : {}),
+        startDate,
+        endDate,
         ...(description.trim() ? { description: description.trim() } : {}),
         ...(budget ? { budget: Number(budget) } : {}),
         status,
@@ -157,7 +163,16 @@ function EditTripContent() {
             </div>
 
             <div>
-              <label className="glass-label">Destination</label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="glass-label mb-0">Destination *</label>
+                <Link
+                  href="/destinations"
+                  className="inline-flex items-center gap-1.5 text-xs text-orange-400 hover:text-orange-300 font-medium transition-colors"
+                >
+                  <Compass className="w-3.5 h-3.5" />
+                  <span>Explore Destinations</span>
+                </Link>
+              </div>
               {selectedDest ? (
                 <div className="flex items-center justify-between rounded-xl border border-orange-400/40 bg-orange-500/10 px-4 py-3 backdrop-blur-sm">
                   <div>
@@ -205,16 +220,16 @@ function EditTripContent() {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="glass-label">Start Date</label>
+                <label className="glass-label">Start Date *</label>
                 <input
-                  type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)}
+                  type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} required
                   className="glass-input"
                 />
               </div>
               <div>
-                <label className="glass-label">End Date</label>
+                <label className="glass-label">End Date *</label>
                 <input
-                  type="date" value={endDate} min={startDate} onChange={(e) => setEndDate(e.target.value)}
+                  type="date" value={endDate} min={startDate} onChange={(e) => setEndDate(e.target.value)} required
                   className="glass-input"
                 />
               </div>
