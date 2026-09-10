@@ -56,22 +56,13 @@ export default function Navbar({ backHref, backLabel }: NavbarProps) {
           )}
 
           {isAdmin ? (
-            <>
-              <Link
-                href="/dashboard"
-                className="inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-sm font-semibold text-orange-400 bg-orange-500/10 border border-orange-500/30 transition-all duration-150"
-              >
-                <Shield className="w-4 h-4" />
-                <span>Control Center</span>
-              </Link>
-              <Link
-                href="/destinations"
-                className="inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-sm font-medium text-white/70 hover:text-white hover:bg-white/5 border border-transparent hover:border-white/10 transition-all duration-150"
-              >
-                <MapPin className="w-3.5 h-3.5" />
-                <span>Destinations</span>
-              </Link>
-            </>
+            <Link
+              href="/dashboard"
+              className="inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-sm font-semibold text-orange-400 bg-orange-500/10 border border-orange-500/30 transition-all duration-150"
+            >
+              <Shield className="w-4 h-4" />
+              <span>Control Center</span>
+            </Link>
           ) : (
             <>
               <Link
