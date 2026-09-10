@@ -24,14 +24,14 @@ public class DestinationService {
     private final RestTemplate restTemplate;
     // OPENWEATHER CONFIGURATION
 
-    @Value("${openweather.api.key}")
+    @Value("${openweather.api.key:}")
     private String weatherApiKey;
 
-    @Value("${openweather.api.url}")
+    @Value("${openweather.api.url:https://api.openweathermap.org/data/2.5/weather}")
     private String weatherApiUrl;
-    // OPENSTREETMAP / NOMINATIM
 
-    @Value("${nominatim.api.url}")
+    // OPENSTREETMAP / NOMINATIM
+    @Value("${nominatim.api.url:https://nominatim.openstreetmap.org/search}")
     private String nominatimApiUrl;
 public List<DestinationResponse> listAll() {
 
