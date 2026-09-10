@@ -31,15 +31,15 @@ public class DataSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-
-        // ── Seed roles ──────────────────────────────────────────
-        DEFAULT_ROLES.forEach(roleName -> {
-            if (roleRepository.findByName(roleName).isEmpty()) {
-                Role role = new Role();
-                role.setName(roleName);
-                roleRepository.save(role);
-            }
-        });
+        try {
+            // ── Seed roles ──────────────────────────────────────────
+            DEFAULT_ROLES.forEach(roleName -> {
+                if (roleRepository.findByName(roleName).isEmpty()) {
+                    Role role = new Role();
+                    role.setName(roleName);
+                    roleRepository.save(role);
+                }
+            });
 
         // ── Seed admin user (runs only once) ────────────────────
         if (!userRepository.existsByEmail(DEFAULT_ADMIN_EMAIL)) {
@@ -159,14 +159,17 @@ public class DataSeeder implements CommandLineRunner {
                 Map.entry("Machu Picchu", new double[] { -13.1631, -72.5450 })
         );
 
-        destinationRepository.findAll().forEach(destination -> {
-            double[] location = coordinates.get(destination.getName());
-            if (location != null && (destination.getLatitude() == null || destination.getLongitude() == null)) {
-                destination.setLatitude(location[0]);
-                destination.setLongitude(location[1]);
-            }
-            destination.setImageUrl("/destinations/" + destination.getId() + ".jpg");
-            destinationRepository.save(destination);
-        });
+            destinationRepository.findAll().forEach(destination -> {
+                double[] location = coordinates.get(destination.getName());
+                if (location != null && (destination.getLatitude() == null || destination.getLongitude() == null)) {
+                    destination.setLatitude(location[0]);
+                    destination.setLongitude(location[1]);
+                }
+                destination.setImageUrl("/destinations/" + destination.getId() + ".jpg");
+                destinationRepository.save(destination);
+            });
+        } catch (Exception e) {
+            System.err.println("[DataSeeder] Notice: Seeding will be retried on next startup: " + e.getMessage());
+        }
     }
 }
