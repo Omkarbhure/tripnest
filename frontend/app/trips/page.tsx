@@ -19,6 +19,7 @@ import {
 } from "@/lib/tripMemberApi";
 import FadeIn from "@/components/ui/FadeIn";
 import { StaggerList, StaggerItem } from "@/components/ui/StaggerList";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { ToastContainer } from "@/components/ui/Toast";
 import { useToast } from "@/hooks/useToast";
 import {
@@ -276,9 +277,13 @@ function TripsContent() {
             </FadeIn>
 
             {loading && (
-              <div className="glass-card p-14 text-center">
-                <div className="h-8 w-8 animate-spin rounded-full border-[3px] border-orange-400 border-t-transparent mx-auto mb-4" />
-                <p className="text-white/60 text-sm">Loading your trips…</p>
+              <div className="glass-card p-10 text-center">
+                <LoadingSpinner
+                  size="md"
+                  message="Loading your trips..."
+                  subMessage="Retrieving your planned itineraries and shared journeys"
+                  icon="plane"
+                />
               </div>
             )}
 

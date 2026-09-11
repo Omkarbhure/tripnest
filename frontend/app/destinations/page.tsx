@@ -9,6 +9,8 @@ import { Destination, NominatimResult, WeatherData } from "@/lib/types";
 import apiClient from "@/lib/apiClient";
 import FadeIn from "@/components/ui/FadeIn";
 import { StaggerList, StaggerItem } from "@/components/ui/StaggerList";
+import { getDestinationImageUrl } from "@/lib/destinationImages";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import {
   Search,
   MapPin,
@@ -471,6 +473,8 @@ function DestCard({
     orange: "bg-orange-500/20 text-orange-300 border-orange-500/30",
   }[badgeColor];
 
+  const resolvedImageUrl = getDestinationImageUrl(destination.name, destination.imageUrl);
+
   return (
     <motion.div
       whileHover={{ y: -4 }}
@@ -482,9 +486,9 @@ function DestCard({
         {!imgLoaded && !imgError && (
           <div className="absolute inset-0 bg-gradient-to-r from-white/5 via-white/10 to-white/5 animate-pulse" />
         )}
-        {!imgError && destination.imageUrl ? (
+        {!imgError ? (
           <img
-            src={destination.imageUrl}
+            src={resolvedImageUrl}
             alt={destination.name}
             loading="lazy"
             onLoad={() => setImgLoaded(true)}
@@ -493,7 +497,7 @@ function DestCard({
                         ${imgLoaded ? "opacity-100" : "opacity-0"}`}
           />
         ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center text-white/30">
+          <div className="w-full h-full flex flex-col items-center justify-center text-white/30 bg-slate-900">
             <Globe className="w-10 h-10 mb-1" />
             <span className="text-xs">No image available</span>
           </div>

@@ -10,6 +10,8 @@ import { Destination, WeatherData } from "@/lib/types";
 import apiClient from "@/lib/apiClient";
 import FadeIn from "@/components/ui/FadeIn";
 import { StaggerList, StaggerItem } from "@/components/ui/StaggerList";
+import { getDestinationImageUrl } from "@/lib/destinationImages";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
 function Orbs() {
   return (
@@ -89,25 +91,12 @@ function DestinationDetailContent() {
       <Orbs />
       <div className="glass-grain" />
       <Navbar backHref="/destinations" backLabel="Destinations" />
-      <div className="glass-content relative max-w-5xl mx-auto px-4 sm:px-6 py-10 space-y-6">
-        <div className="glass-card overflow-hidden animate-pulse">
-          <div className="w-full h-72 bg-white/10" />
-          <div className="p-7 sm:p-8 space-y-4">
-            <div className="h-8 bg-white/10 rounded w-1/3" />
-            <div className="h-4 bg-white/5 rounded w-1/4" />
-            <div className="h-4 bg-white/5 rounded w-full mt-4" />
-            <div className="h-4 bg-white/5 rounded w-5/6" />
-          </div>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="glass-card p-5 space-y-2 animate-pulse">
-              <div className="h-3 bg-white/10 rounded w-1/3" />
-              <div className="h-5 bg-white/10 rounded w-1/2" />
-            </div>
-          ))}
-        </div>
-      </div>
+      <LoadingSpinner
+        size="lg"
+        message="Loading Destination Details..."
+        subMessage="Gathering attractions and current weather data"
+        icon="compass"
+      />
     </div>
   );
 
@@ -153,14 +142,10 @@ function DestinationDetailContent() {
 
           <div className="glass-card overflow-hidden">
             <div className="relative w-full h-72 bg-gradient-to-br from-orange-500/20 via-amber-500/10 to-rose-500/10 border-b border-white/10">
-              {destination.imageUrl && (
-                <HeroImage src={destination.imageUrl} alt={destination.name} />
-              )}
-              {!destination.imageUrl && (
-                <div className="w-full h-full flex items-center justify-center">
-                  <Icon name="globe" className="h-20 w-20 text-white/70" />
-                </div>
-              )}
+              <HeroImage
+                src={getDestinationImageUrl(destination.name, destination.imageUrl)}
+                alt={destination.name}
+              />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a]/95 via-[#0f172a]/20 to-transparent pointer-events-none" />
             </div>
 

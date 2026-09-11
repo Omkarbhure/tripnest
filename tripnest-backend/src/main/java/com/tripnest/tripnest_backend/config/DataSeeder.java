@@ -122,7 +122,7 @@ public class DataSeeder implements CommandLineRunner {
 
                 new Destination(null, "Bali", "Indonesia", "Denpasar",
                     "A tropical escape celebrated for lush rice terraces, Hindu temples, surf beaches, wellness retreats, and warm hospitality.",
-                    "https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=1200&q=85"),
+                    "https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=1200&q=85"),
 
                 new Destination(null, "Machu Picchu", "Peru", "Cusco",
                     "A breathtaking Incan citadel high in the Andes, surrounded by dramatic mountain landscapes and rich archaeological heritage.",

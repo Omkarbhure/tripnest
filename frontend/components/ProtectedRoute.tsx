@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { motion } from "framer-motion";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
@@ -17,7 +18,7 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
 
   if (isLoading) {
     return (
-      <div className="glass-canvas">
+      <div className="glass-canvas min-h-screen">
         <div className="glass-orbs" aria-hidden>
           <motion.div
             className="glass-orb glass-orb--orange"
@@ -36,12 +37,12 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
           />
           <div className="glass-grain" />
         </div>
-        <div className="relative z-10 min-h-screen flex items-center justify-center">
-          <div className="flex flex-col items-center gap-4">
-            <div className="h-10 w-10 animate-spin rounded-full border-[3px] border-orange-400 border-t-transparent" />
-            <p className="text-sm text-white/50 tracking-wide">Loading…</p>
-          </div>
-        </div>
+        <LoadingSpinner
+          size="fullscreen"
+          message="Welcome to TripNest"
+          subMessage="Preparing your travel workspace..."
+          icon="compass"
+        />
       </div>
     );
   }
