@@ -1,0 +1,25 @@
+name: Keep Render Backend Alive
+
+on:
+  schedule:
+    # Runs every 10 minutes (Render sleeps after 15 minutes of inactivity)
+    - cron: '*/10 * * * *'
+  workflow_dispatch: # Allows manual trigger from GitHub Actions tab
+
+jobs:
+  keep-alive:
+    name: Ping Render Backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Health Endpoint
+        env:
+          BACKEND_URL: ${{ secrets.RENDER_BACKEND_URL || 'https://tripnest-backend.onrender.com' }}
+        run: |
+          echo "Pinging backend at: ${BACKEND_URL}/api/health"
+          RESPONSE_CODE=$(curl -s -o /dev/null -w "%{http_code}" "${BACKEND_URL}/api/health")
+          echo "Received HTTP status code: ${RESPONSE_CODE}"
+          if [ "$RESPONSE_CODE" -ge 200 ] && [ "$RESPONSE_CODE" -lt 400 ]; then
+            echo "Backend is active and healthy!"
+          else
+            echo "Warning: Received unexpected status code: ${RESPONSE_CODE}"
+          fi
