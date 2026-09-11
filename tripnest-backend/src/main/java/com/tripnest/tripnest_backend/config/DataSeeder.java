@@ -58,43 +58,43 @@ public class DataSeeder implements CommandLineRunner {
         List<Destination> destinations = List.of(
                 new Destination(null, "Goa", "India", "Panaji",
                     "India's beach paradise famous for its golden sandy shores, vibrant nightlife, Portuguese heritage, water sports, and laid-back Konkani culture.",
-                    "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Baga_beach_Goa.jpg/1280px-Baga_beach_Goa.jpg"),
+                    "https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=1200&q=85"),
 
                 new Destination(null, "Manali", "India", "Manali",
                     "A stunning Himalayan hill station known for snow-capped peaks, adventure sports, Rohtang Pass, Solang Valley, and the ancient Hadimba Temple.",
-                    "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Manali_-_panoramio.jpg/1280px-Manali_-_panoramio.jpg"),
+                    "https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&w=1200&q=85"),
 
                 new Destination(null, "Jaipur", "India", "Jaipur",
                     "The Pink City of Rajasthan, home to the majestic Amber Fort, Hawa Mahal, City Palace, and vibrant bazaars overflowing with gems and textiles.",
-                    "https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Hawa_Mahal_Jaipur.jpg/1024px-Hawa_Mahal_Jaipur.jpg"),
+                    "https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&w=1200&q=85"),
 
                 new Destination(null, "Kerala Backwaters", "India", "Alleppey",
                     "A tranquil network of lagoons, lakes, and canals lined with coconut palms. Explore on traditional houseboats and experience authentic Kerala village life.",
-                    "https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Kerala_backwaters.jpg/1280px-Kerala_backwaters.jpg"),
+                    "https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&w=1200&q=85"),
 
                 new Destination(null, "Varanasi", "India", "Varanasi",
                     "One of the world's oldest cities, situated on the sacred Ganges River. Famous for its ghats, morning aarti ceremonies, temples, and spiritual significance.",
-                    "https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Ghats_in_Varanasi_2013.jpg/1280px-Ghats_in_Varanasi_2013.jpg"),
+                    "https://images.unsplash.com/photo-1561361066-419b48c3b4c1?auto=format&fit=crop&w=1200&q=85"),
 
                 new Destination(null, "Agra", "India", "Agra",
                     "Home to the iconic Taj Mahal, one of the Seven Wonders of the World. Also features the magnificent Agra Fort and Fatehpur Sikri.",
-                    "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Taj_Mahal_%28Edited%29.jpeg/1280px-Taj_Mahal_%28Edited%29.jpeg"),
+                    "https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=1200&q=85"),
 
                 new Destination(null, "Darjeeling", "India", "Darjeeling",
                     "A charming hill station in West Bengal famous for its tea gardens, the Toy Train UNESCO heritage railway, Tiger Hill sunrise views, and Himalayan panoramas.",
-                    "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Darjeeling_-_Tea_Garden.jpg/1280px-Darjeeling_-_Tea_Garden.jpg"),
+                    "https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=1200&q=85"),
 
                 new Destination(null, "Udaipur", "India", "Udaipur",
                     "The City of Lakes in Rajasthan, known for its romantic lake palaces, City Palace complex, Pichola Lake boat rides, and rich Mewar royal heritage.",
-                    "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Lake_Palace_Udaipur.jpg/1280px-Lake_Palace_Udaipur.jpg"),
+                    "https://images.unsplash.com/photo-1615836245337-f5b9b2303f10?auto=format&fit=crop&w=1200&q=85"),
 
                 new Destination(null, "Andaman Islands", "India", "Port Blair",
                     "A pristine archipelago in the Bay of Bengal with crystal-clear turquoise waters, coral reefs, Radhanagar Beach, and the historic Cellular Jail.",
-                    "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Radhanagar_Beach_Andaman.jpg/1280px-Radhanagar_Beach_Andaman.jpg"),
+                    "https://images.unsplash.com/photo-1589308078059-be1415eab4c3?auto=format&fit=crop&w=1200&q=85"),
 
                 new Destination(null, "Leh Ladakh", "India", "Leh",
                     "A remote high-altitude desert region with dramatic landscapes, ancient Buddhist monasteries, Pangong Lake, Nubra Valley, and thrilling mountain passes.",
-                    "https://images.unsplash.com/photo-1626014303757-63616a3c5b55?auto=format&fit=crop&w=1200&q=85"),
+                    "https://images.unsplash.com/photo-1581793745862-99fde7fa73d2?auto=format&fit=crop&w=1200&q=85"),
 
                 new Destination(null, "Paris", "France", "Paris",
                     "The City of Light blends iconic landmarks, celebrated art museums, elegant cafés, and timeless streets along the Seine.",
@@ -106,7 +106,7 @@ public class DataSeeder implements CommandLineRunner {
 
                 new Destination(null, "New York City", "United States", "New York",
                     "A fast-paced city of world-class museums, Broadway, landmark architecture, diverse neighborhoods, and unforgettable skyline views.",
-                    "https://images.unsplash.com/photo-1485871981521-5b1fd3805eee?auto=format&fit=crop&w=1200&q=85"),
+                    "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?auto=format&fit=crop&w=1200&q=85"),
 
                 new Destination(null, "Dubai", "United Arab Emirates", "Dubai",
                     "A modern desert metropolis where landmark towers, golden dunes, waterfront dining, and traditional souks meet.",

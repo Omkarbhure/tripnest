@@ -9,7 +9,7 @@ import { Destination, NominatimResult, WeatherData } from "@/lib/types";
 import apiClient from "@/lib/apiClient";
 import FadeIn from "@/components/ui/FadeIn";
 import { StaggerList, StaggerItem } from "@/components/ui/StaggerList";
-import { getDestinationImageUrl } from "@/lib/destinationImages";
+import { getDestinationImageUrl, DEFAULT_DESTINATION_IMAGE } from "@/lib/destinationImages";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import {
   Search,
@@ -464,8 +464,16 @@ function DestCard({
   badge?: string;
   badgeColor?: "amber" | "sky" | "orange";
 }) {
+  const initialUrl = getDestinationImageUrl(destination.name, destination.imageUrl);
+  const [currentSrc, setCurrentSrc] = useState(initialUrl);
   const [imgLoaded, setImgLoaded] = useState(false);
-  const [imgError, setImgError] = useState(false);
+  const [hasError, setHasError] = useState(false);
+
+  useEffect(() => {
+    setCurrentSrc(getDestinationImageUrl(destination.name, destination.imageUrl));
+    setImgLoaded(false);
+    setHasError(false);
+  }, [destination.name, destination.imageUrl]);
 
   const badgeStyles = {
     amber: "bg-amber-500/20 text-amber-300 border-amber-500/30",
@@ -473,7 +481,13 @@ function DestCard({
     orange: "bg-orange-500/20 text-orange-300 border-orange-500/30",
   }[badgeColor];
 
-  const resolvedImageUrl = getDestinationImageUrl(destination.name, destination.imageUrl);
+  const handleImageError = () => {
+    if (currentSrc !== DEFAULT_DESTINATION_IMAGE) {
+      setCurrentSrc(DEFAULT_DESTINATION_IMAGE);
+    } else {
+      setHasError(true);
+    }
+  };
 
   return (
     <motion.div
@@ -483,16 +497,17 @@ function DestCard({
     >
       {/* Image Container with Badges */}
       <div className="relative w-full h-48 overflow-hidden bg-gradient-to-br from-slate-900 to-slate-800 border-b border-white/10">
-        {!imgLoaded && !imgError && (
+        {!imgLoaded && !hasError && (
           <div className="absolute inset-0 bg-gradient-to-r from-white/5 via-white/10 to-white/5 animate-pulse" />
         )}
-        {!imgError ? (
+        {!hasError ? (
           <img
-            src={resolvedImageUrl}
+            src={currentSrc}
             alt={destination.name}
             loading="lazy"
+            referrerPolicy="no-referrer"
             onLoad={() => setImgLoaded(true)}
-            onError={() => setImgError(true)}
+            onError={handleImageError}
             className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out
                         ${imgLoaded ? "opacity-100" : "opacity-0"}`}
           />

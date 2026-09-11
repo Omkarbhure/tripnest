@@ -10,7 +10,7 @@ import { Destination, WeatherData } from "@/lib/types";
 import apiClient from "@/lib/apiClient";
 import FadeIn from "@/components/ui/FadeIn";
 import { StaggerList, StaggerItem } from "@/components/ui/StaggerList";
-import { getDestinationImageUrl } from "@/lib/destinationImages";
+import { getDestinationImageUrl, DEFAULT_DESTINATION_IMAGE } from "@/lib/destinationImages";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
 function Orbs() {
@@ -295,8 +295,24 @@ function WeatherCard({ icon, label, value }: { icon: IconName; label: string; va
 }
 
 function HeroImage({ src, alt }: { src: string; alt: string }) {
+  const [currentSrc, setCurrentSrc] = useState(src);
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
+
+  useEffect(() => {
+    setCurrentSrc(src);
+    setLoaded(false);
+    setError(false);
+  }, [src]);
+
+  const handleError = () => {
+    if (currentSrc !== DEFAULT_DESTINATION_IMAGE) {
+      setCurrentSrc(DEFAULT_DESTINATION_IMAGE);
+    } else {
+      setError(true);
+    }
+  };
+
   return (
     <>
       {!loaded && !error && (
@@ -304,9 +320,12 @@ function HeroImage({ src, alt }: { src: string; alt: string }) {
       )}
       {!error ? (
         <img
-          src={src} alt={alt} loading="lazy"
+          src={currentSrc}
+          alt={alt}
+          loading="lazy"
+          referrerPolicy="no-referrer"
           onLoad={() => setLoaded(true)}
-          onError={() => setError(true)}
+          onError={handleError}
           className={`w-full h-full object-cover transition-opacity duration-500 ${loaded ? "opacity-100" : "opacity-0"}`}
         />
       ) : (

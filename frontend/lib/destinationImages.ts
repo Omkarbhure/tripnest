@@ -42,8 +42,13 @@ export function getDestinationImageUrl(name?: string, rawUrl?: string | null): s
     }
   }
 
-  // 3. Check rawUrl if provided and not placeholder
-  if (rawUrl && rawUrl.trim() && !rawUrl.includes("via.placeholder.com") && !rawUrl.includes("photo-1537996194471")) {
+  // 3. Check rawUrl if provided and not placeholder / not old broken ID
+  if (
+    rawUrl &&
+    rawUrl.trim() &&
+    !rawUrl.includes("via.placeholder.com") &&
+    !rawUrl.includes("photo-1537996194471")
+  ) {
     return rawUrl.trim();
   }
 
