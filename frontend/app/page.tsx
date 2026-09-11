@@ -3,9 +3,14 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Plane, Sparkles, Compass, MapPin, Sun, CreditCard, Users, ArrowRight } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import { Plane, Sparkles, Compass, MapPin, Sun, CreditCard, Users, ArrowRight, LayoutDashboard } from "lucide-react";
 
 export default function LandingPage() {
+  const { user } = useAuth();
+
+  const exploreUrl = user ? "/destinations" : "/login";
+  const makeTripUrl = user ? "/trips/create" : "/login";
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#0a0f1d] text-white font-sans selection:bg-orange-500/30 selection:text-orange-200">
@@ -52,19 +57,33 @@ export default function LandingPage() {
           </Link>
 
           <nav className="flex items-center gap-3">
-            <Link
-              href="/login"
-              className="rounded-2xl border border-white/15 bg-white/5 hover:bg-white/10 px-4 py-2 text-sm font-medium text-white/90 backdrop-blur transition-all"
-            >
-              Sign In
-            </Link>
-            <Link
-              href="/register"
-              className="inline-flex items-center gap-1.5 rounded-2xl bg-gradient-to-r from-orange-500 via-orange-500 to-rose-500 px-5 py-2 text-sm font-semibold text-white shadow-[0_10px_25px_-8px_rgba(249,115,22,0.5)] hover:brightness-110 active:scale-95 transition-all"
-            >
-              <span>Get Started</span>
-              <Sparkles className="w-4 h-4 text-amber-200" />
-            </Link>
+            {user ? (
+              <>
+                <Link
+                  href="/dashboard"
+                  className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-orange-500 via-orange-500 to-rose-500 px-5 py-2 text-sm font-semibold text-white shadow-[0_10px_25px_-8px_rgba(249,115,22,0.5)] hover:brightness-110 active:scale-95 transition-all"
+                >
+                  <LayoutDashboard className="w-4 h-4 text-amber-200" />
+                  <span>Go to Dashboard</span>
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="rounded-2xl border border-white/15 bg-white/5 hover:bg-white/10 px-4 py-2 text-sm font-medium text-white/90 backdrop-blur transition-all"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/register"
+                  className="inline-flex items-center gap-1.5 rounded-2xl bg-gradient-to-r from-orange-500 via-orange-500 to-rose-500 px-5 py-2 text-sm font-semibold text-white shadow-[0_10px_25px_-8px_rgba(249,115,22,0.5)] hover:brightness-110 active:scale-95 transition-all"
+                >
+                  <span>Get Started</span>
+                  <Sparkles className="w-4 h-4 text-amber-200" />
+                </Link>
+              </>
+            )}
           </nav>
         </header>
 
@@ -97,7 +116,7 @@ export default function LandingPage() {
 
               <div className="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-4">
                 <Link
-                  href="/login"
+                  href={makeTripUrl}
                   className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-orange-500 via-orange-500 to-rose-500 px-7 py-3.5 text-base font-bold text-white shadow-[0_12px_35px_-10px_rgba(249,115,22,0.6)] hover:brightness-110 active:scale-95 transition-all"
                 >
                   <span>Make a Trip</span>
@@ -105,7 +124,7 @@ export default function LandingPage() {
                 </Link>
 
                 <Link
-                  href="/destinations"
+                  href={exploreUrl}
                   className="inline-flex items-center gap-2 rounded-2xl border border-white/15 bg-white/5 hover:bg-white/10 backdrop-blur px-6 py-3.5 text-base font-medium text-white transition-all"
                 >
                   <MapPin className="w-4 h-4 text-orange-300" />

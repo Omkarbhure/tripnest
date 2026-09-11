@@ -26,25 +26,25 @@ export const DEFAULT_DESTINATION_IMAGE =
   "https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&q=80";
 
 export function getDestinationImageUrl(name?: string, rawUrl?: string | null): string {
-  if (rawUrl && rawUrl.trim() && !rawUrl.includes("via.placeholder.com")) {
-    // If the name is Bali and the rawUrl is broken/low quality, override with vibrant Bali photo
-    if (name && name.toLowerCase().includes("bali") && rawUrl.includes("photo-1537996194471")) {
-      return DESTINATION_FALLBACK_IMAGES["bali"];
-    }
-    return rawUrl.trim();
+  const cleanName = name ? name.trim().toLowerCase() : "";
+
+  // 1. Direct curated match for platform catalog destinations
+  if (cleanName && DESTINATION_FALLBACK_IMAGES[cleanName]) {
+    return DESTINATION_FALLBACK_IMAGES[cleanName];
   }
 
-  if (name) {
-    const key = name.trim().toLowerCase();
-    if (DESTINATION_FALLBACK_IMAGES[key]) {
-      return DESTINATION_FALLBACK_IMAGES[key];
-    }
-    // Partial search in keys
-    for (const [k, url] of Object.entries(DESTINATION_FALLBACK_IMAGES)) {
-      if (key.includes(k) || k.includes(key)) {
+  // 2. Partial match in curated destinations list
+  if (cleanName) {
+    for (const [key, url] of Object.entries(DESTINATION_FALLBACK_IMAGES)) {
+      if (cleanName.includes(key) || key.includes(cleanName)) {
         return url;
       }
     }
+  }
+
+  // 3. Check rawUrl if provided and not placeholder
+  if (rawUrl && rawUrl.trim() && !rawUrl.includes("via.placeholder.com") && !rawUrl.includes("photo-1537996194471")) {
+    return rawUrl.trim();
   }
 
   return DEFAULT_DESTINATION_IMAGE;
