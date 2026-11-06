@@ -46,7 +46,8 @@ public class SecurityConfig {
             "http://127.0.0.1:*",
             "https://*.vercel.app",
             "https://*.render.com",
-            "https://*.onrender.com"
+            "https://*.onrender.com",
+            "https://*.pages.dev"
         ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
