@@ -1,7 +1,9 @@
 # TripNest - Project Status & Documentation
 
-> **Last Updated**: September 2026  
-> **Platform**: Full-Stack Travel Planning & Trip Management Platform
+> **Last Updated**: November 2026  
+> **Platform**: Full-Stack Travel Planning & Trip Management Platform  
+> **Repository**: [https://github.com/Omkarbhure/tripnest](https://github.com/Omkarbhure/tripnest)  
+> **Cloud Deployments**: Frontend on Cloudflare | Backend on Render  
 
 ---
 
