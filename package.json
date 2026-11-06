@@ -15,5 +15,9 @@
     "next": "16.2.12",
     "react": "19.2.4",
     "react-dom": "19.2.4"
+  },
+  "optionalDependencies": {
+    "lightningcss-linux-x64-gnu": "1.32.0",
+    "lightningcss-linux-x64-musl": "1.32.0"
   }
 }
