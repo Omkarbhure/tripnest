@@ -55,7 +55,7 @@ public class DatabaseConfig {
                     cleanUrl += "?" + query;
                 } else if (!"localhost".equalsIgnoreCase(host) && !"127.0.0.1".equals(host)) {
                     // Remote cloud databases (e.g. Render, Neon, Supabase) require SSL
-                    cleanUrl += "?sslmode=require";
+                    cleanUrl += "?sslmode=prefer";
                 }
             } catch (Exception e) {
                 log.warn("[DatabaseConfig] URI parsing failed, attempting fallback extraction: {}", e.getMessage());
@@ -75,7 +75,7 @@ public class DatabaseConfig {
                         cleanUrl = "jdbc:postgresql://" + stripped;
                     }
                     if (!cleanUrl.contains("sslmode") && !cleanUrl.contains("localhost") && !cleanUrl.contains("127.0.0.1")) {
-                        cleanUrl += (cleanUrl.contains("?") ? "&" : "?") + "sslmode=require";
+                        cleanUrl += (cleanUrl.contains("?") ? "&" : "?") + "sslmode=prefer";
                     }
                 } catch (Exception ex) {
                     log.error("[DatabaseConfig] Fallback parsing error", ex);
